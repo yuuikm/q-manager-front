@@ -1,0 +1,21 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "semi": true,
+  "importOrder": [
+    "^react$",
+    "<THIRD_PARTY_MODULES>",
+    "^api/(.*)$",
+    "^pages/(.*)$",
+    "^shared/(.*)$",
+    "^constants/(.*)$",
+    "^store/(.*)$",
+    "^assets/(.*)$",
+    "^styles/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
