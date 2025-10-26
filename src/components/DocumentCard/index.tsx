@@ -45,10 +45,7 @@ const DocumentCard: FC<DocumentCardProps> = ({ document, onViewDetails }) => {
   };
 
   const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
+    return `${price}₸`;
   };
 
   return (

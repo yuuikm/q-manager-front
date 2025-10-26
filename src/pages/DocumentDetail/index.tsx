@@ -273,20 +273,20 @@ const DocumentDetail = () => {
                 
                 <div className="ml-8 text-right">
                   <div className="text-3xl font-bold text-blue-600 mb-2">
-                    ${document.price}
+                    {document.price}₸
                   </div>
                   {document.price === 0 && (
                     <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full mb-4">
-                      Free
+                      Бесплатно
                     </span>
                   )}
                   <div className="text-sm text-gray-500 mb-4">
-                    {document.buy_number} purchases
+                    {document.buy_number} покупок
                   </div>
                   {isPurchased && (
                     <div className="mb-4">
                       <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                        ✓ Purchased
+                        ✓ Куплено
                       </span>
                     </div>
                   )}
@@ -296,7 +296,7 @@ const DocumentDetail = () => {
                        disabled={previewLoading}
                        className="w-full bg-gray-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
                      >
-                       {previewLoading ? 'Loading Preview...' : 'Preview (First 3 Pages)'}
+                       {previewLoading ? 'Загрузка предпросмотра...' : 'Предпросмотр (первые 3 страницы)'}
                      </button>
                      
                      {document.price === 0 ? (
@@ -304,21 +304,21 @@ const DocumentDetail = () => {
                          onClick={handleDownload}
                          className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition-colors"
                        >
-                         Download Free
+                         Скачать бесплатно
                        </button>
                      ) : isPurchased ? (
                        <button
                          onClick={handleDownload}
                          className="w-full bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition-colors"
                        >
-                         Download Full Document
+                         Скачать документ
                        </button>
                      ) : (
                        <button
                          onClick={handlePurchase}
                          className="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors"
                        >
-                         Purchase Now (${document.price})
+                         Купить ({document.price}₸)
                        </button>
                      )}
                    </div>

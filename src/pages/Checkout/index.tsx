@@ -200,7 +200,7 @@ const Checkout: FC = () => {
               <div className="flex justify-between items-center text-lg font-semibold">
                 <span className="text-gray-900">Итого:</span>
                 <span className="text-indigo-600">
-                  {checkoutItem.price > 0 ? `${checkoutItem.price} ₽` : 'Бесплатно'}
+                  {checkoutItem.price > 0 ? `${checkoutItem.price}₸` : 'Бесплатно'}
                 </span>
               </div>
             </div>
