@@ -12,6 +12,7 @@ interface Document {
     name: string;
   } | null;
   price: number;
+  preview_pages?: number;
   file_name: string;
   file_type: string;
   file_size: number;
@@ -69,11 +70,12 @@ const DocumentDetail = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const months = [
+      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ];
+    const date = new Date(dateString);
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
   const handlePurchase = async () => {
@@ -102,7 +104,7 @@ const DocumentDetail = () => {
         if (contentType && contentType.includes('application/json')) {
           // Non-PDF file, show message
           const data = await response.json();
-          alert(data.message || 'Preview not available for this file type');
+          alert(data.message || 'Предпросмотр недоступен для этого типа файла');
         } else {
           // PDF file, create blob URL for preview
           const blob = await response.blob();
@@ -111,11 +113,11 @@ const DocumentDetail = () => {
           setShowPreview(true);
         }
       } else {
-        alert('Failed to load preview');
+        alert('Не удалось загрузить предпросмотр');
       }
     } catch (error) {
       console.error('Preview error:', error);
-      alert('An error occurred while loading the preview');
+      alert('Произошла ошибка при загрузке предпросмотра');
     } finally {
       setPreviewLoading(false);
     }
@@ -134,7 +136,7 @@ const DocumentDetail = () => {
     
     // Check if document is free or user has purchased it
     if (document.price > 0 && !isPurchased) {
-      alert('Please purchase this document to download the full version');
+      alert('Пожалуйста, купите этот документ, чтобы загрузить полную версию');
       return;
     }
     
@@ -169,11 +171,11 @@ const DocumentDetail = () => {
         window.document.body.removeChild(a);
       } else {
         const error = await response.json();
-        alert(error.message || 'Failed to download document');
+        alert(error.message || 'Не удалось загрузить документ');
       }
     } catch (error) {
       console.error('Download error:', error);
-      alert('An error occurred while downloading the document');
+      alert('Произошла ошибка при загрузке документа');
     }
   };
 
@@ -183,7 +185,7 @@ const DocumentDetail = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading document...</p>
+            <p className="mt-4 text-gray-600">Загрузка документа...</p>
           </div>
         </div>
       </div>
@@ -195,13 +197,13 @@ const DocumentDetail = () => {
       <div className="min-h-screen bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Document Not Found</h1>
-            <p className="text-gray-600 mb-6">{error || 'The document you are looking for does not exist.'}</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Документ не найден</h1>
+            <p className="text-gray-600 mb-6">{error || 'Документ, который вы ищете, не существует.'}</p>
             <button
               onClick={() => navigate('/documents')}
               className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
-              Back to Documents
+              Вернуться к документам
             </button>
           </div>
         </div>
@@ -221,7 +223,7 @@ const DocumentDetail = () => {
                   onClick={() => navigate('/')}
                   className="hover:text-blue-600 transition-colors"
                 >
-                  Home
+                  Главная
                 </button>
               </li>
               <li>/</li>
@@ -230,7 +232,7 @@ const DocumentDetail = () => {
                   onClick={() => navigate('/documents')}
                   className="hover:text-blue-600 transition-colors"
                 >
-                  Documents
+                  Документы
                 </button>
               </li>
               <li>/</li>
@@ -296,7 +298,9 @@ const DocumentDetail = () => {
                        disabled={previewLoading}
                        className="w-full bg-gray-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
                      >
-                       {previewLoading ? 'Загрузка предпросмотра...' : 'Предпросмотр (первые 3 страницы)'}
+                       {previewLoading ? 'Загрузка предпросмотра...' : document?.preview_pages 
+                         ? `Предпросмотр (первые ${document.preview_pages} ${document.preview_pages === 1 ? 'страница' : document.preview_pages < 5 ? 'страницы' : 'страниц'})`
+                         : 'Предпросмотр (первые 3 страницы)'}
                      </button>
                      
                      {document.price === 0 ? (
@@ -327,22 +331,22 @@ const DocumentDetail = () => {
 
               {/* File Information */}
               <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">File Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Информация о файле</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">File Name</div>
+                    <div className="text-sm text-gray-600 mb-1">Имя файла</div>
                     <div className="font-medium">{document.file_name}</div>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">File Type</div>
+                    <div className="text-sm text-gray-600 mb-1">Тип файла</div>
                     <div className="font-medium">{document.file_type}</div>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">File Size</div>
+                    <div className="text-sm text-gray-600 mb-1">Размер файла</div>
                     <div className="font-medium">{formatFileSize(document.file_size)}</div>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-600 mb-1">Created By</div>
+                    <div className="text-sm text-gray-600 mb-1">Создан пользователем</div>
                     <div className="font-medium">{document.creator.name}</div>
                   </div>
                 </div>
@@ -350,12 +354,12 @@ const DocumentDetail = () => {
 
               {/* Related Documents */}
               <div className="border-t border-gray-200 pt-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">More from {document.category?.name || 'Uncategorized'}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Еще из категории {document.category?.name || 'Без категории'}</h3>
                 <button
                   onClick={() => navigate(`/documents/category/${document.category?.name.toLowerCase()}`)}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  View all {document.category?.name || 'Uncategorized'} documents →
+                  Посмотреть все документы из категории {document.category?.name || 'Без категории'} →
                 </button>
               </div>
             </div>
@@ -370,10 +374,12 @@ const DocumentDetail = () => {
              <div className="flex items-center justify-between p-3 sm:p-4 border-b">
                <div className="flex-1 min-w-0">
                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                   Document Preview - {document?.title}
+                   Превью документа - {document?.title}
                  </h3>
                  <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
-                   Showing first 3 pages only • {document?.file_name}
+                   {document?.preview_pages 
+                     ? `Показ первых ${document.preview_pages} ${document.preview_pages === 1 ? 'страницы' : 'страниц'} • ${document?.file_name}`
+                     : `Показ первых 3 страниц • ${document?.file_name}`}
                  </p>
                </div>
                <button
@@ -387,21 +393,23 @@ const DocumentDetail = () => {
                <iframe
                  src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=100`}
                  className="w-full h-full border-0 rounded"
-                 title="Document Preview"
+                 title="Предпросмотр документа"
                />
              </div>
              <div className="p-3 sm:p-4 border-t bg-gray-50">
                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
                  <div className="flex-1">
                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-                     <strong>Preview:</strong> Showing first 3 pages only
+                     <strong>Превью:</strong> {document?.preview_pages 
+                       ? `Показываются первые ${document.preview_pages} ${document.preview_pages === 1 ? 'страница' : document.preview_pages < 5 ? 'страницы' : 'страниц'}`
+                       : 'Показываются первые 3 страницы'}
                    </p>
                    <p className="text-xs sm:text-sm text-gray-600">
                      {document?.price > 0 && !isPurchased 
-                       ? 'Purchase the document to download the full version.' 
+                       ? 'Купите документ, чтобы загрузить полную версию.' 
                        : isPurchased 
-                         ? 'You have purchased this document. Click "Download Full Document" to get the complete file.'
-                         : 'Click "Download Free" to get the complete document.'
+                         ? 'Вы приобрели этот документ. Нажмите "Скачать документ" для получения полного файла.'
+                         : 'Нажмите "Скачать бесплатно" для получения полного документа.'
                      }
                    </p>
                  </div>
@@ -414,14 +422,14 @@ const DocumentDetail = () => {
                        }}
                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
                      >
-                       Purchase Now
+                       Купить сейчас
                      </button>
                    )}
                    <button
                      onClick={closePreview}
                      className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm sm:text-base"
                    >
-                     Close Preview
+                     Закрыть превью
                    </button>
                  </div>
                </div>
