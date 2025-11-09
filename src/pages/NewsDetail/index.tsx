@@ -37,6 +37,28 @@ const NewsDetail: FC = () => {
     });
   };
 
+  // Convert YouTube URL to embed URL
+  const getYouTubeEmbedUrl = (url: string): string => {
+    if (!url) return '';
+    
+    // Handle various YouTube URL formats
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = (match && match[2].length === 11) ? match[2] : null;
+    
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // If it's already an embed URL, return as is
+    if (url.includes('youtube.com/embed/')) {
+      return url;
+    }
+    
+    // If we can't parse it, return the original URL
+    return url;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -111,13 +133,31 @@ const NewsDetail: FC = () => {
                 {news.title}
               </h1>
               
-              <p className="text-lg text-gray-600 leading-relaxed">
-                {news.description}
-              </p>
+              {news.description && (
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  {news.description}
+                </p>
+              )}
             </div>
 
-            {/* Image */}
-            {news.image_path && (
+            {/* Video */}
+            {news.video_link && (
+              <div className="w-full bg-gray-200 overflow-hidden">
+                <div className="relative" style={{ paddingBottom: '56.25%', height: 0 }}>
+                  <iframe
+                    src={getYouTubeEmbedUrl(news.video_link)}
+                    className="absolute top-0 left-0 w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={news.title}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Image - only show if no video */}
+            {!news.video_link && news.image_path && (
               <div className="w-full h-96 bg-gray-200 overflow-hidden">
                 <img
                   src={`http://localhost:8000/storage/${news.image_path}`}

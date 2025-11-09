@@ -4,7 +4,8 @@ export interface NewsItem {
   id: number;
   title: string;
   slug: string;
-  description: string;
+  description?: string;
+  video_link?: string;
   content: string;
   image_path?: string;
   is_published: boolean;

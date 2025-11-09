@@ -6,7 +6,7 @@ import AuthModal from '../AuthModal/index';
 export interface ContentCardData {
   id: number;
   title: string;
-  description: string;
+  description?: string;
   price?: number;
   category?: {
     id: number;
@@ -128,9 +128,11 @@ const ContentCard: FC<ContentCardProps> = ({ item, type, onViewDetails, onPurcha
           </h2>
           
           {/* Description */}
-          <p className="text-white text-sm mb-4 text-center opacity-90 line-clamp-2">
-            {item.description}
-          </p>
+          {item.description && (
+            <p className="text-white text-sm mb-4 text-center opacity-90 line-clamp-2">
+              {item.description}
+            </p>
+          )}
           
           {/* Item Info */}
           <div className="text-white text-sm mb-4 text-center opacity-90">
