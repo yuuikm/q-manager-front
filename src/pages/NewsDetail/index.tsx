@@ -40,22 +40,43 @@ const NewsDetail: FC = () => {
   // Convert YouTube URL to embed URL
   const getYouTubeEmbedUrl = (url: string): string => {
     if (!url) return '';
-    
-    // Handle various YouTube URL formats
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = (match && match[2].length === 11) ? match[2] : null;
-    
-    if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}`;
+
+    try {
+      const parsedUrl = new URL(url);
+      const hostname = parsedUrl.hostname.replace('www.', '');
+      let videoId: string | null = null;
+
+      if (hostname === 'youtu.be') {
+        videoId = parsedUrl.pathname.split('/')[1] || null;
+      } else if (hostname.endsWith('youtube.com')) {
+        const path = parsedUrl.pathname;
+
+        if (path.startsWith('/watch')) {
+          videoId = parsedUrl.searchParams.get('v');
+        } else if (path.startsWith('/embed/')) {
+          videoId = path.split('/embed/')[1]?.split('/')[0] || null;
+        } else if (path.startsWith('/shorts/')) {
+          videoId = path.split('/shorts/')[1]?.split('/')[0] || null;
+        } else {
+          // Fallback for /v/, /u/ etc.
+          const regExp = /^.*(\/v\/|\/u\/\w\/)([^#&?]*).*/;
+          const match = url.match(regExp);
+          videoId = match && match[2] ? match[2] : null;
+        }
+      }
+
+      if (videoId && videoId.length === 11) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+
+      // Already an embed link
+      if (url.includes('youtube.com/embed/')) {
+        return url;
+      }
+    } catch (error) {
+      // Ignore parsing errors, fall back to original URL
     }
-    
-    // If it's already an embed URL, return as is
-    if (url.includes('youtube.com/embed/')) {
-      return url;
-    }
-    
-    // If we can't parse it, return the original URL
+
     return url;
   };
 
