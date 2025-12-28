@@ -18,10 +18,18 @@ const ManagerHelp: FC = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [helpsData, categoriesData] = await Promise.all([
+            const [response, categoriesData] = await Promise.all([
                 managerHelpAPI.getHelps(selectedCategory ? { category_id: selectedCategory } : {}),
                 managerHelpAPI.getCategories()
             ]);
+
+            let helpsData: ManagerHelpItem[] = [];
+            if (Array.isArray(response)) {
+                helpsData = response;
+            } else if (response && typeof response === 'object' && Array.isArray((response as any).data)) {
+                helpsData = (response as any).data;
+            }
+
             setHelps(helpsData);
             setCategories(categoriesData);
         } catch (err) {
@@ -58,8 +66,8 @@ const ManagerHelp: FC = () => {
                         <button
                             onClick={() => setSelectedCategory(null)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === null
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
                                 }`}
                         >
                             Все
@@ -69,8 +77,8 @@ const ManagerHelp: FC = () => {
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat.id
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
                                     }`}
                             >
                                 {cat.name}
