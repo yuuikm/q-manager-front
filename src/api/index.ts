@@ -2,6 +2,7 @@
 export * from './auth';
 export * from './news';
 export * from './courses';
+export * from './slider';
 
 // Re-export types for convenience
 export type { LoginCredentials, RegisterData, AuthResponse, ApiError } from './auth';

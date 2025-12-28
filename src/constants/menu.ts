@@ -59,7 +59,7 @@ export const MAIN_MENU: MenuItem[] = [
   },
   {
     label: 'Помощь менеджеру',
-    path: '#',
+    path: ROUTES.MANAGER_HELP,
   },
   {
     label: 'Платная документация',

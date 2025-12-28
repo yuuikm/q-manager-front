@@ -17,6 +17,8 @@ import DevelopmentConsultation from 'pages/Consultation/Development';
 import EFQMConsultation from 'pages/Consultation/EFQM';
 import ImprovementConsultation from 'pages/Consultation/Improvement';
 import AuditConsultation from 'pages/Consultation/Audit';
+import ManagerHelp from 'pages/ManagerHelp';
+import ManagerHelpDetail from 'pages/ManagerHelpDetail';
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
       <Route path={ROUTES.CONSULTATION_EFQM} element={<EFQMConsultation />} />
       <Route path={ROUTES.CONSULTATION_IMPROVEMENT} element={<ImprovementConsultation />} />
       <Route path={ROUTES.CONSULTATION_AUDIT} element={<AuditConsultation />} />
+      <Route path={ROUTES.MANAGER_HELP} element={<ManagerHelp />} />
+      <Route path={ROUTES.MANAGER_HELP_DETAIL} element={<ManagerHelpDetail />} />
     </Routes>
   );
 }
