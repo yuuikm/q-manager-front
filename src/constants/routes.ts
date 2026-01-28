@@ -8,7 +8,7 @@ export const ROUTES = {
   // Documents
   DOCUMENTS: '/documents',
   DOCUMENT_DETAIL: '/documents/view/:id',
-  DOCUMENT_CATEGORY: '/documents/category/:category',
+  SUBCATEGORY_DETAIL: '/documents/:subcategorySlug',
 
   // News
   NEWS: '/news',
@@ -55,7 +55,7 @@ export const generateRoute = (route: string, params: Record<string, string | num
 // Route helpers for common use cases
 export const routeHelpers = {
   documentDetail: (id: number) => generateRoute(ROUTES.DOCUMENT_DETAIL, { id }),
-  documentCategory: (category: string) => generateRoute(ROUTES.DOCUMENT_CATEGORY, { category }),
+  subcategoryDetail: (subcategorySlug: string) => generateRoute(ROUTES.SUBCATEGORY_DETAIL, { subcategorySlug }),
   newsDetail: (id: number) => generateRoute(ROUTES.NEWS_DETAIL, { id }),
   courseDetail: (id: number) => generateRoute(ROUTES.COURSE_DETAIL, { id }),
   managerHelpDetail: (id: number) => generateRoute(ROUTES.MANAGER_HELP_DETAIL, { id }),

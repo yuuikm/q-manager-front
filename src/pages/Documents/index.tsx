@@ -1,54 +1,45 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { DOCUMENT_ENDPOINTS } from 'constants/endpoints';
-import DocumentCard from 'components/DocumentCard';
+import SubcategoryCard from 'components/SubcategoryCard';
 
-interface Document {
+interface Category {
   id: number;
-  title: string;
-  description: string;
-  category: {
+  name: string;
+}
+
+interface Subcategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  documents_count?: number;
+  category?: {
     id: number;
     name: string;
-  } | null;
-  price: number;
-  file_name: string;
-  file_type: string;
-  file_size: number;
-  buy_number: number;
-  created_at: string;
+  };
 }
 
 const Documents = () => {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-low' | 'price-high' | 'popular'>('newest');
-  const { category } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDocuments();
+    fetchSubcategories();
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    if (category) {
-      setSelectedCategory(category);
-    }
-  }, [category]);
-
-  const fetchDocuments = async () => {
+  const fetchSubcategories = async () => {
     try {
-      const response = await fetch(DOCUMENT_ENDPOINTS.GET_DOCUMENTS);
+      const response = await fetch(DOCUMENT_ENDPOINTS.GET_SUBCATEGORIES);
       if (response.ok) {
         const data = await response.json();
-        setDocuments(data.data || []);
+        setSubcategories(data || []);
       }
     } catch (error) {
-      console.error('Error fetching documents:', error);
+      console.error('Error fetching subcategories:', error);
     } finally {
       setLoading(false);
     }
@@ -59,42 +50,23 @@ const Documents = () => {
       const response = await fetch(DOCUMENT_ENDPOINTS.GET_CATEGORIES);
       if (response.ok) {
         const data = await response.json();
-        setCategories(data.map((cat: any) => cat.name));
+        setCategories(data || []);
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
 
-  const filteredAndSortedDocuments = documents
-    .filter(doc => {
-      const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           doc.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || doc.category?.name === selectedCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        case 'oldest':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'popular':
-          return b.buy_number - a.buy_number;
-        default:
-          return 0;
-      }
-    });
+  const filteredSubcategories = subcategories.filter(sub => {
+    const matchesSearch = sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sub.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sub.category?.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const handleCategoryClick = (cat: string) => {
-    setSelectedCategory(cat);
-    navigate(cat === 'all' ? '/documents' : `/documents/${cat.toLowerCase()}`);
-  };
+    const matchesCategory = selectedCategory === 'all' ||
+      sub.category?.name === selectedCategory;
 
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
     return (
@@ -102,7 +74,7 @@ const Documents = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading documents...</p>
+            <p className="mt-4 text-gray-600">Загрузка...</p>
           </div>
         </div>
       </div>
@@ -115,56 +87,53 @@ const Documents = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {selectedCategory === 'all' ? 'Все документы' : `Документы ${selectedCategory}`}
+            Категории документов
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Откройте для себя нашу полную коллекцию документов и ресурсов
+            Выберите категорию для просмотра документов
           </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="max-w-4xl mx-auto mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Search */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Поиск</label>
+            <div className="relative">
               <input
                 type="text"
-                placeholder="Поиск документов..."
+                placeholder="Поиск категорий..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
               />
+              <svg
+                className="absolute left-4 top-3.5 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Категория</label>
               <select
                 value={selectedCategory}
-                onChange={(e) => handleCategoryClick(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
               >
                 <option value="all">Все категории</option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
                 ))}
-              </select>
-            </div>
-
-            {/* Sort */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Сортировка</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="newest">Сначала новые</option>
-                <option value="oldest">Сначала старые</option>
-                <option value="price-low">Цена: от низкой к высокой</option>
-                <option value="price-high">Цена: от высокой к низкой</option>
-                <option value="popular">Самые популярные</option>
               </select>
             </div>
           </div>
@@ -172,49 +141,49 @@ const Documents = () => {
 
         {/* Category Pills */}
         <div className="mb-8">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 justify-center">
             <button
-              onClick={() => handleCategoryClick('all')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === 'all'
+              onClick={() => setSelectedCategory('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === 'all'
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-              }`}
-            >
-              Все ({documents.length})
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryClick(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
                 }`}
-              >
-                {cat} ({documents.filter(doc => doc.category?.name === cat).length})
-              </button>
-            ))}
+            >
+              Все ({subcategories.length})
+            </button>
+            {categories.map((cat) => {
+              const count = subcategories.filter(sub => sub.category?.name === cat.name).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.name)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat.name
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                    }`}
+                >
+                  {cat.name} ({count})
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-gray-600">
-            Показано {filteredAndSortedDocuments.length} из {documents.length} документов
+            Показано {filteredSubcategories.length} из {subcategories.length} категорий
           </p>
         </div>
 
-        {/* Documents Grid */}
-        {filteredAndSortedDocuments.length === 0 ? (
+        {/* Subcategories Grid */}
+        {filteredSubcategories.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-md">
-            <p className="text-gray-600 text-lg">Документы, соответствующие вашим критериям, не найдены.</p>
+            <p className="text-gray-600 text-lg">Категории не найдены.</p>
             <button
               onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('all');
-                navigate('/documents');
               }}
               className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
@@ -223,15 +192,8 @@ const Documents = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredAndSortedDocuments.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                onViewDetails={(doc) => {
-                  // Navigate to document details or show modal
-                  navigate(`/documents/view/${doc.id}`);
-                }}
-              />
+            {filteredSubcategories.map((subcategory) => (
+              <SubcategoryCard key={subcategory.id} subcategory={subcategory} />
             ))}
           </div>
         )}

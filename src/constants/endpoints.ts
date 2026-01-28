@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://back.q-manager.kz';
+export const BASE_URL = 'http://localhost:8000';
 
 export const API_BASE_URL = `${BASE_URL}/api`;
 
@@ -19,6 +19,8 @@ export const DOCUMENT_ENDPOINTS = {
   GET_DOCUMENTS: `${API_BASE_URL}/documents`,
   GET_DOCUMENT: `${API_BASE_URL}/documents`,
   GET_CATEGORIES: `${API_BASE_URL}/categories`,
+  GET_SUBCATEGORIES: `${API_BASE_URL}/subcategories`,
+  GET_SUBCATEGORY_BY_SLUG: `${API_BASE_URL}/subcategories/slug`,
   DOWNLOAD_DOCUMENT: `${API_BASE_URL}/documents`,
   PREVIEW_DOCUMENT: `${API_BASE_URL}/documents`,
   PURCHASE_DOCUMENT: `${API_BASE_URL}/documents`,

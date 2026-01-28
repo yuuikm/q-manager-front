@@ -19,6 +19,7 @@ import ImprovementConsultation from 'pages/Consultation/Improvement';
 import AuditConsultation from 'pages/Consultation/Audit';
 import ManagerHelp from 'pages/ManagerHelp';
 import ManagerHelpDetail from 'pages/ManagerHelpDetail';
+import SubcategoryDetail from 'pages/SubcategoryDetail';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
       <Route path={ROUTES.REGISTER} element={<Register />} />
       <Route path={ROUTES.PROFILE} element={<Profile />} />
       <Route path={ROUTES.DOCUMENTS} element={<Documents />} />
-      <Route path={ROUTES.DOCUMENT_CATEGORY} element={<Documents />} />
+      <Route path={ROUTES.SUBCATEGORY_DETAIL} element={<SubcategoryDetail />} />
       <Route path={ROUTES.DOCUMENT_DETAIL} element={<DocumentDetail />} />
       <Route path={ROUTES.NEWS} element={<News />} />
       <Route path={ROUTES.NEWS_DETAIL} element={<NewsDetail />} />
