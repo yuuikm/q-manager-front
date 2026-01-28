@@ -2,6 +2,7 @@ import { type FC, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { managerHelpAPI, type ManagerHelpItem } from 'api/managerHelp';
 import { ROUTES } from 'constants/routes';
+import { BASE_URL } from 'constants/endpoints.ts';
 
 const ManagerHelpDetail: FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -97,7 +98,7 @@ const ManagerHelpDetail: FC = () => {
                                         📄 Прикрепленные документы
                                     </h3>
                                     <a
-                                        href={`http://localhost:8000/storage/${help.file_path}`}
+                                        href={`${BASE_URL}/storage/${help.file_path}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors shadow-sm"

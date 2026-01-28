@@ -1,6 +1,7 @@
 import { type FC, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { newsAPI, type NewsItem } from 'api/news';
+import { BASE_URL } from 'constants/endpoints.ts';
 
 const NewsDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -181,7 +182,7 @@ const NewsDetail: FC = () => {
             {!news.video_link && news.image_path && (
               <div className="w-full h-96 bg-gray-200 overflow-hidden">
                 <img
-                  src={`http://localhost:8000/storage/${news.image_path}`}
+                  src={`${BASE_URL}/storage/${news.image_path}`}
                   alt={news.title}
                   className="w-full h-full object-cover"
                 />

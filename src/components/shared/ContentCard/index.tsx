@@ -2,6 +2,7 @@ import { type FC } from 'react';
 import { useAppSelector } from 'store/hooks';
 import { useAuthModal } from 'hooks/useAuthModal';
 import AuthModal from '../AuthModal/index';
+import { BASE_URL } from 'constants/endpoints.ts';
 
 export interface ContentCardData {
   id: number;
@@ -113,7 +114,7 @@ const ContentCard: FC<ContentCardProps> = ({ item, type, onViewDetails, onPurcha
         {(type === 'course' || type === 'news') && (item.featured_image || item.image_path) && (
           <div className="h-32 bg-gray-200 overflow-hidden">
             <img
-              src={`http://localhost:8000/storage/${item.featured_image || item.image_path}`}
+              src={`${BASE_URL}/storage/${item.featured_image || item.image_path}`}
               alt={item.title}
               className="w-full h-full object-cover"
             />

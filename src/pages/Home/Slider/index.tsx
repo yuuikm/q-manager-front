@@ -1,5 +1,6 @@
 import { type FC, useEffect, useState } from 'react';
 import { sliderAPI, type Slider as SliderType } from 'api/slider';
+import { BASE_URL } from 'constants/endpoints.ts';
 
 const Slider: FC = () => {
   const [sliders, setSliders] = useState<SliderType[]>([]);
@@ -75,7 +76,7 @@ const Slider: FC = () => {
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-[5000ms] ease-linear transform scale-100"
             style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(http://localhost:8000/storage/${slide.image_path})`,
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${BASE_URL}/storage/${slide.image_path})`,
               transform: index === currentIndex ? 'scale(1.05)' : 'scale(1)'
             }}
           />

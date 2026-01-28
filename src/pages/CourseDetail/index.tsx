@@ -4,6 +4,7 @@ import { useAppSelector } from 'store/hooks';
 import { useAuthModal } from 'hooks/useAuthModal';
 import AuthModal from 'components/shared/AuthModal';
 import { coursesAPI, type Course, type CourseMaterial } from 'api/courses';
+import { BASE_URL } from 'constants/endpoints.ts';
 
 const CourseDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -169,11 +170,11 @@ const CourseDetail: FC = () => {
                       {formatDate(course.created_at)}
                     </span>
                   </div>
-                  
+
                   <h1 className="text-3xl font-bold text-gray-900 mb-4">
                     {course.title}
                   </h1>
-                  
+
                   <p className="text-lg text-gray-600 leading-relaxed">
                     {course.description}
                   </p>
@@ -183,7 +184,7 @@ const CourseDetail: FC = () => {
                 {course.featured_image && (
                   <div className="w-full h-96 bg-gray-200 overflow-hidden">
                     <img
-                      src={`http://localhost:8000/storage/${course.featured_image}`}
+                      src={`${BASE_URL}storage/${course.featured_image}`}
                       alt={course.title}
                       className="w-full h-full object-cover"
                     />
@@ -192,7 +193,7 @@ const CourseDetail: FC = () => {
 
                 {/* Content */}
                 <div className="p-8">
-                  <div 
+                  <div
                     className="prose prose-lg max-w-none"
                     dangerouslySetInnerHTML={{ __html: course.content }}
                   />
@@ -321,7 +322,7 @@ const CourseDetail: FC = () => {
                       </div>
                       <div className="ml-3">
                         <p className="font-medium">
-                          {course.author.first_name && course.author.last_name 
+                          {course.author.first_name && course.author.last_name
                             ? `${course.author.first_name} ${course.author.last_name}`
                             : course.author.username
                           }
@@ -336,7 +337,7 @@ const CourseDetail: FC = () => {
           </div>
         </div>
       </div>
-      
+
       <AuthModal
         isOpen={isOpen}
         onClose={closeModal}

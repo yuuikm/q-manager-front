@@ -1,4 +1,6 @@
 export const API_BASE_URL = 'https://back.q-manager.kz/api';
+export const BASE_URL = 'https://back.q-manager.kz';
+
 
 export const AUTH_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/auth/login`,
@@ -36,10 +38,15 @@ export const COURSE_ENDPOINTS = {
   GET_COURSE_MATERIALS: `${API_BASE_URL}/courses`,
 } as const;
 
+export const SLIDER_ENDPOINTS = {
+  GET_SLIDERS: `${API_BASE_URL}/sliders`,
+} as const;
+
 export const API_ENDPOINTS = {
   PING: `${API_BASE_URL}/ping`,
   USERS: `${API_BASE_URL}/users`,
   ...DOCUMENT_ENDPOINTS,
   ...NEWS_ENDPOINTS,
   ...COURSE_ENDPOINTS,
+  ...SLIDER_ENDPOINTS,
 } as const;
