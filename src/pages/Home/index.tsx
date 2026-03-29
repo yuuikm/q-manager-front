@@ -13,12 +13,12 @@ function Home() {
   return (
     <>
       <Slider />
+      <LearningFormats />
       <Services />
       <Testimonials />
       <Courses />
       <News />
       <Documents />
-      <LearningFormats />
       <Partners />
       <Faq />
       <About />
