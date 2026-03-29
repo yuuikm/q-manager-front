@@ -34,6 +34,9 @@ function App() {
       <Route path={ROUTES.NEWS} element={<News />} />
       <Route path={ROUTES.NEWS_DETAIL} element={<NewsDetail />} />
       <Route path={ROUTES.COURSES} element={<Courses />} />
+      <Route path={ROUTES.COURSES_ONLINE} element={<Courses type="online" />} />
+      <Route path={ROUTES.COURSES_OFFLINE} element={<Courses type="offline" />} />
+      <Route path={ROUTES.COURSES_SELF} element={<Courses type="self_learning" />} />
       <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetail />} />
       <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
       <Route path={ROUTES.ABOUT_US} element={<About />} />

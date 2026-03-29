@@ -15,7 +15,10 @@ export const ROUTES = {
   NEWS_DETAIL: '/news/:id',
 
   // Courses
-  COURSES: '/courses',
+  COURSES: '/courses', // keeping for fallback/existing links if necessary
+  COURSES_ONLINE: '/courses/online',
+  COURSES_OFFLINE: '/courses/offline',
+  COURSES_SELF: '/courses/self-education',
   COURSE_DETAIL: '/courses/:id',
 
   // Checkout

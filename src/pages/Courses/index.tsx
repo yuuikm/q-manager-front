@@ -2,8 +2,13 @@ import { type FC, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { coursesAPI, type Course } from 'api/courses';
 import ContentCard, { type ContentCardData } from 'components/shared/ContentCard';
+import { COURSE_TITLES, COURSE_DESCRIPTIONS } from 'constants/courses';
 
-const Courses: FC = () => {
+interface CoursesProps {
+  type?: 'online' | 'offline' | 'self_learning';
+}
+
+const Courses: FC<CoursesProps> = ({ type }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,12 +16,18 @@ const Courses: FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
+  // Reset page when type changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [type]);
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
         const response = await coursesAPI.getCourses({ 
-          page: currentPage 
+          page: currentPage,
+          ...(type ? { type } : {})
         });
         setCourses(response.data);
         setTotalPages(response.last_page);
@@ -28,7 +39,10 @@ const Courses: FC = () => {
     };
 
     fetchCourses();
-  }, [currentPage]);
+  }, [currentPage, type]);
+
+  const pageTitle = type ? COURSE_TITLES[type] : COURSE_TITLES.default;
+  const pageDescription = type ? COURSE_DESCRIPTIONS[type] : COURSE_DESCRIPTIONS.default;
 
   const handleViewDetails = (item: ContentCardData) => {
     navigate(`/courses/${item.id}`);
@@ -44,7 +58,7 @@ const Courses: FC = () => {
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold text-center mb-12">Все курсы</h1>
+            <h1 className="text-3xl font-bold text-center mb-12">{pageTitle}</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[...Array(8)].map((_, index) => (
                 <div key={index} className="bg-gray-200 animate-pulse rounded-lg h-64"></div>
@@ -61,7 +75,7 @@ const Courses: FC = () => {
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold text-center mb-12">Все курсы</h1>
+            <h1 className="text-3xl font-bold text-center mb-12">{pageTitle}</h1>
             <div className="text-center text-red-600">
               <p>{error}</p>
             </div>
@@ -75,11 +89,45 @@ const Courses: FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold mb-4">Все курсы</h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Изучайте современные стандарты менеджмента с нашими экспертами
-            </p>
+          <div className="mb-12">
+            <div className="text-center">
+              <h1 className="text-4xl font-extrabold mb-6 text-gray-900">{pageTitle}</h1>
+              {pageDescription.subtitle && (
+                <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                  {pageDescription.subtitle}
+                </p>
+              )}
+            </div>
+            
+            {pageDescription.sections && pageDescription.sections.length > 0 && (
+              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                {pageDescription.sections.map((section, idx) => (
+                  <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900">{section.title}</h3>
+                    {section.content && (
+                      <p className="text-gray-600 leading-relaxed mb-4">{section.content}</p>
+                    )}
+                    {section.list && (
+                      <ul className="space-y-4">
+                        {section.list.map((item, idxi) => (
+                          <li key={idxi} className="flex flex-start">
+                            <span className="mr-3 mt-0.5 text-blue-600">{item.icon || (
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}</span>
+                            <span className="text-gray-600">
+                              {item.label && <strong className="font-semibold text-gray-900 mr-1">{item.label}:</strong>}
+                              {item.text}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

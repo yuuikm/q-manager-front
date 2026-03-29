@@ -75,6 +75,7 @@ export const coursesAPI = {
     category?: string;
     search?: string;
     featured?: boolean;
+    type?: string;
   }): Promise<CourseResponse> {
     const url = new URL(COURSE_ENDPOINTS.GET_COURSES);
     
@@ -82,6 +83,7 @@ export const coursesAPI = {
     if (params?.category) url.searchParams.append('category', params.category);
     if (params?.search) url.searchParams.append('search', params.search);
     if (params?.featured !== undefined) url.searchParams.append('featured', params.featured.toString());
+    if (params?.type) url.searchParams.append('type', params.type);
 
     const response = await fetch(url.toString(), {
       headers: {

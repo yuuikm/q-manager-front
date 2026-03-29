@@ -22,8 +22,16 @@ export const MAIN_MENU: MenuItem[] = [
         path: ROUTES.ABOUT_US,
       },
       {
-        label: 'Курсы',
-        path: ROUTES.COURSES,
+        label: 'Онлайн курсы',
+        path: ROUTES.COURSES_ONLINE,
+      },
+      {
+        label: 'Офлайн курсы',
+        path: ROUTES.COURSES_OFFLINE,
+      },
+      {
+        label: 'Дистанционное обучение',
+        path: ROUTES.COURSES_SELF,
       },
     ],
   },
@@ -54,8 +62,22 @@ export const MAIN_MENU: MenuItem[] = [
     path: ROUTES.NEWS,
   },
   {
-    label: 'Семинары',
-    path: ROUTES.COURSES,
+    label: 'Курсы',
+    path: '#',
+    children: [
+      {
+        label: 'Онлайн курсы',
+        path: ROUTES.COURSES_ONLINE,
+      },
+      {
+        label: 'Офлайн курсы',
+        path: ROUTES.COURSES_OFFLINE,
+      },
+      {
+        label: 'Дистанционное обучение',
+        path: ROUTES.COURSES_SELF,
+      },
+    ],
   },
   {
     label: 'Помощь менеджеру',
