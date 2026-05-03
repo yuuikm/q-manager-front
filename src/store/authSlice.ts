@@ -7,6 +7,7 @@ interface User {
   id: number;
   username: string;
   email: string;
+  phone?: string;
   created_at: string;
   updated_at: string;
 }
