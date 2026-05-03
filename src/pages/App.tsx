@@ -21,6 +21,7 @@ import AuditConsultation from 'pages/Consultation/Audit';
 import ManagerHelp from 'pages/ManagerHelp';
 import ManagerHelpDetail from 'pages/ManagerHelpDetail';
 import SubcategoryDetail from 'pages/SubcategoryDetail';
+import CertificatePage from 'pages/Certificate';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Route path={ROUTES.CONSULTATION_AUDIT} element={<AuditConsultation />} />
       <Route path={ROUTES.MANAGER_HELP} element={<ManagerHelp />} />
       <Route path={ROUTES.MANAGER_HELP_DETAIL} element={<ManagerHelpDetail />} />
+      <Route path={ROUTES.CERTIFICATE} element={<CertificatePage />} />
     </Routes>
   );
 }

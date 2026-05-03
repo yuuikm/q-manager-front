@@ -40,6 +40,8 @@ export const COURSE_ENDPOINTS = {
   GET_COURSE_CATEGORIES: `${API_BASE_URL}/course-categories`,
   GET_COURSE_MATERIALS: `${API_BASE_URL}/courses`,
   USER_ENROLLED_COURSES: `${API_BASE_URL}/user/enrolled-courses`,
+  USER_CERTIFICATES: `${API_BASE_URL}/user/certificates`,
+  VERIFY_CERTIFICATE: `${API_BASE_URL}/certificates`,
 } as const;
 
 export const SLIDER_ENDPOINTS = {

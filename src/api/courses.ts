@@ -1,5 +1,31 @@
 import { COURSE_ENDPOINTS } from 'constants/endpoints';
 
+export interface Certificate {
+  id: number;
+  certificate_number: string;
+  final_score: number;
+  issued_at: string;
+  is_valid: boolean;
+  course: {
+    id: number;
+    title: string;
+  };
+  user?: {
+    first_name: string | null;
+    last_name: string | null;
+    username: string;
+  };
+}
+
+export interface CertificateVerification {
+  certificate_number: string;
+  final_score: number;
+  issued_at: string;
+  is_valid: boolean;
+  course: { id: number; title: string };
+  user: { first_name: string | null; last_name: string | null; username: string };
+}
+
 export interface Course {
   id: number;
   title: string;
@@ -69,8 +95,18 @@ export interface Test {
   passing_score: number;
   is_active: boolean;
   total_questions?: number;
+  time_limit_minutes: number;
+  max_attempts: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface TestQuestion {
+  id: number;
+  question: string;
+  type: 'single_choice' | 'multiple_choice' | 'text';
+  options: string[];
+  points: number;
 }
 
 export interface CourseResponse {
@@ -169,6 +205,32 @@ export const coursesAPI = {
     }
 
     return response.json();
+  },
+
+  async getCertificates(): Promise<Certificate[]> {
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error('Not authenticated');
+
+    const response = await fetch(COURSE_ENDPOINTS.USER_CERTIFICATES, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch certificates');
+    const data = await response.json();
+    return data.certificates || [];
+  },
+
+  async verifyCertificate(number: string): Promise<CertificateVerification> {
+    const response = await fetch(`${COURSE_ENDPOINTS.VERIFY_CERTIFICATE}/${number}`, {
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) throw new Error('Сертификат не найден');
+    const data = await response.json();
+    return data.certificate;
   },
 
   async updateCourseProgress(courseId: number, currentStepIndex: number, progressPercentage?: number): Promise<any> {

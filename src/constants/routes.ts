@@ -41,6 +41,9 @@ export const ROUTES = {
   MANAGER_HELP: '/manager-help',
   MANAGER_HELP_DETAIL: '/manager-help/:id',
 
+  // Certificate verification
+  CERTIFICATE: '/certificate/:number',
+
   // Admin (if needed for frontend)
   ADMIN: '/admin',
 } as const;
@@ -64,4 +67,5 @@ export const routeHelpers = {
   courseDetail: (id: number) => generateRoute(ROUTES.COURSE_DETAIL, { id }),
   managerHelpDetail: (id: number) => generateRoute(ROUTES.MANAGER_HELP_DETAIL, { id }),
   checkout: (type: 'course' | 'document', id: number) => `${ROUTES.CHECKOUT}?type=${type}&id=${id}`,
+  certificate: (number: string) => `/certificate/${number}`,
 } as const;
