@@ -4,6 +4,8 @@ import { fields, initialValues, validationSchema } from './config';
 import FormWrapper from 'shared/FormWrapper';
 import { ROUTES } from 'constants/routes';
 import { useAppSelector } from 'store/hooks';
+import { API_BASE_URL } from 'constants/endpoints';
+import MockCard from './MockCard';
 
 interface CheckoutItem {
   id: number;
@@ -20,6 +22,8 @@ const Checkout: FC = () => {
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [formValues, setFormValues] = useState<typeof initialValues | null>(null);
 
   useEffect(() => {
     const type = searchParams.get('type');
@@ -47,8 +51,8 @@ const Checkout: FC = () => {
       setError(null);
 
       const endpoint = type === 'course' 
-        ? `${process.env.REACT_APP_API_URL}/api/courses/${id}`
-        : `${process.env.REACT_APP_API_URL}/api/documents/${id}`;
+        ? `${API_BASE_URL}/courses/${id}`
+        : `${API_BASE_URL}/documents/${id}`;
 
       const response = await fetch(endpoint);
       
@@ -72,16 +76,21 @@ const Checkout: FC = () => {
     }
   };
 
-  const handleSubmit = async (values: typeof initialValues) => {
-    if (!checkoutItem) return;
+  const handleSubmit = (values: typeof initialValues) => {
+    setFormValues(values);
+    setShowPayment(true);
+  };
+
+  const executePurchase = async () => {
+    if (!checkoutItem || !formValues) return;
 
     try {
       setError(null);
 
       // Create purchase/enrollment request
       const endpoint = checkoutItem.type === 'course'
-        ? `${process.env.REACT_APP_API_URL}/api/courses/${checkoutItem.id}/enroll`
-        : `${process.env.REACT_APP_API_URL}/api/documents/${checkoutItem.id}/purchase`;
+        ? `${API_BASE_URL}/courses/${checkoutItem.id}/enroll`
+        : `${API_BASE_URL}/documents/${checkoutItem.id}/purchase`;
 
       const token = localStorage.getItem('auth_token');
       
@@ -93,12 +102,12 @@ const Checkout: FC = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          first_name: values.firstName,
-          last_name: values.lastName,
-          phone: values.phone,
-          email: values.email,
-          company: values.company || null,
-          notes: values.notes || null,
+          first_name: formValues.firstName,
+          last_name: formValues.lastName,
+          phone: formValues.phone,
+          email: formValues.email,
+          company: formValues.company || null,
+          notes: formValues.notes || null,
         }),
       });
 
@@ -112,6 +121,7 @@ const Checkout: FC = () => {
       navigate(ROUTES.PROFILE);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Произошла ошибка при оформлении заказа');
+      setShowPayment(false);
     }
   };
 
@@ -234,18 +244,26 @@ const Checkout: FC = () => {
               </div>
             )}
 
-            <FormWrapper
-              fields={fields}
-              initialValues={user ? {
-                ...initialValues,
-                firstName: user.first_name || '',
-                lastName: user.last_name || '',
-                email: user.email || '',
-              } : initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              submitText={checkoutItem.type === 'course' ? 'Записаться на курс' : 'Купить документ'}
-            />
+            {showPayment ? (
+              <MockCard 
+                amount={checkoutItem.price} 
+                isAllowedUser={user?.username === 'mmorozov'} 
+                onSuccess={executePurchase} 
+              />
+            ) : (
+              <FormWrapper
+                fields={fields}
+                initialValues={user ? {
+                  ...initialValues,
+                  firstName: user.first_name || '',
+                  lastName: user.last_name || '',
+                  email: user.email || '',
+                } : initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+                submitText={checkoutItem.type === 'course' ? 'Перейти к оплате курса' : 'Перейти к оплате документа'}
+              />
+            )}
           </div>
         </div>
       </div>

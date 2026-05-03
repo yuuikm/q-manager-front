@@ -8,6 +8,7 @@ export const AUTH_ENDPOINTS = {
   LOGOUT: `${API_BASE_URL}/auth/logout`,
   USER: `${API_BASE_URL}/auth/user`,
   REFRESH: `${API_BASE_URL}/auth/refresh`,
+  PROFILE: `${API_BASE_URL}/auth/profile`,
 } as const;
 
 export const USER_ENDPOINTS = {
@@ -38,6 +39,7 @@ export const COURSE_ENDPOINTS = {
   GET_COURSE: `${API_BASE_URL}/courses`,
   GET_COURSE_CATEGORIES: `${API_BASE_URL}/course-categories`,
   GET_COURSE_MATERIALS: `${API_BASE_URL}/courses`,
+  USER_ENROLLED_COURSES: `${API_BASE_URL}/user/enrolled-courses`,
 } as const;
 
 export const SLIDER_ENDPOINTS = {

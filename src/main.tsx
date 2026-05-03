@@ -11,13 +11,15 @@ import Footer from 'pages/layout/Footer';
 
 function LayoutWrapper() {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isImmersivePage = location.pathname === '/login' || 
+                          location.pathname === '/register' || 
+                          location.pathname.startsWith('/learn');
 
   return (
     <>
-      {!isAuthPage && <Header />}
+      {!isImmersivePage && <Header />}
       <App />
-      {!isAuthPage && <Footer />}
+      {!isImmersivePage && <Footer />}
     </>
   );
 }

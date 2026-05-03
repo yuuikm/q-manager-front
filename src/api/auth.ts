@@ -17,6 +17,7 @@ export interface AuthResponse {
     id: number;
     username: string;
     email: string;
+    phone?: string;
     created_at: string;
     updated_at: string;
   };
@@ -101,6 +102,30 @@ export const authAPI = {
     if (!response.ok) {
       const errorData: ApiError = await response.json();
       throw new Error(errorData.message || 'Failed to get user data');
+    }
+
+    return response.json();
+  },
+
+  async updateProfile(data: { phone?: string; first_name?: string; last_name?: string; email?: string }): Promise<{ message: string; user: AuthResponse['user'] }> {
+    const token = localStorage.getItem('auth_token');
+    
+    const response = await fetch(AUTH_ENDPOINTS.PROFILE, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData: ApiError = await response.json();
+      if (errorData.errors && errorData.errors.phone) {
+        throw new Error(errorData.errors.phone[0]);
+      }
+      throw new Error(errorData.message || 'Failed to update profile');
     }
 
     return response.json();

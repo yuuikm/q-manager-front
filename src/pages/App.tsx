@@ -10,6 +10,7 @@ import News from 'pages/News';
 import NewsDetail from 'pages/NewsDetail';
 import Courses from 'pages/Courses';
 import CourseDetail from 'pages/CourseDetail';
+import LearnCourse from 'pages/LearnCourse';
 import Checkout from 'pages/Checkout';
 import About from 'pages/About';
 import Contact from 'pages/Contact';
@@ -38,6 +39,7 @@ function App() {
       <Route path={ROUTES.COURSES_OFFLINE} element={<Courses type="offline" />} />
       <Route path={ROUTES.COURSES_SELF} element={<Courses type="self_learning" />} />
       <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetail />} />
+      <Route path={ROUTES.LEARN_COURSE} element={<LearnCourse />} />
       <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
       <Route path={ROUTES.ABOUT_US} element={<About />} />
       <Route path={ROUTES.CONTACT} element={<Contact />} />

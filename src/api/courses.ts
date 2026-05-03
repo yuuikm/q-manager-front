@@ -61,6 +61,18 @@ export interface CourseCategory {
   updated_at: string;
 }
 
+export interface Test {
+  id: number;
+  course_id: number;
+  title: string;
+  description?: string;
+  passing_score: number;
+  is_active: boolean;
+  total_questions?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CourseResponse {
   data: Course[];
   current_page: number;
@@ -139,6 +151,47 @@ export const coursesAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch course materials');
+    }
+
+    return response.json();
+  },
+
+  async getCourseTests(courseId: number): Promise<Test[]> {
+    const response = await fetch(`${COURSE_ENDPOINTS.GET_COURSES}/${courseId}/tests`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch course tests');
+    }
+
+    return response.json();
+  },
+
+  async updateCourseProgress(courseId: number, currentStepIndex: number, progressPercentage?: number): Promise<any> {
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error('Not authenticated');
+
+    const body: any = { current_step_index: currentStepIndex };
+    if (progressPercentage !== undefined) {
+      body.progress_percentage = progressPercentage;
+    }
+
+    const response = await fetch(`${COURSE_ENDPOINTS.GET_COURSES}/${courseId}/progress`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update progress');
     }
 
     return response.json();

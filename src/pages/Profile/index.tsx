@@ -2,7 +2,8 @@ import { type FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { getCurrentUser, checkAuth } from 'store/authSlice';
-import { DOCUMENT_ENDPOINTS } from 'constants/endpoints';
+import { DOCUMENT_ENDPOINTS, COURSE_ENDPOINTS } from 'constants/endpoints';
+import { authAPI } from 'api/auth';
 
 interface PurchasedDocument {
   id: number;
@@ -22,12 +23,53 @@ interface PurchasedDocument {
   purchased_at: string;
 }
 
+interface EnrolledCourse {
+  id: number;
+  course: {
+    id: number;
+    title: string;
+    description: string;
+    type: string[];
+    price: number;
+    category: {
+      id: number;
+      name: string;
+    } | null;
+  };
+  status: string;
+  enrolled_at: string;
+}
+
 const Profile: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated, isLoading } = useAppSelector((state: any) => state.auth);
   const [purchasedDocuments, setPurchasedDocuments] = useState<PurchasedDocument[]>([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
+
+  useEffect(() => {
+    if (user?.phone) {
+      setPhoneInput(user.phone);
+    }
+  }, [user]);
+
+  const handleSavePhone = async () => {
+    try {
+      setIsSavingPhone(true);
+      await authAPI.updateProfile({ phone: phoneInput });
+      dispatch(getCurrentUser());
+      setIsEditingPhone(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to update phone');
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
 
   const fetchPurchasedDocuments = async () => {
     try {
@@ -54,12 +96,37 @@ const Profile: FC = () => {
     }
   };
 
+  const fetchEnrolledCourses = async () => {
+    try {
+      setLoadingCourses(true);
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      const response = await fetch(COURSE_ENDPOINTS.USER_ENROLLED_COURSES, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setEnrolledCourses(data.enrollments || []);
+      }
+    } catch (error) {
+      console.error('Error fetching enrolled courses:', error);
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (token) {
       dispatch(checkAuth());
       dispatch(getCurrentUser());
       fetchPurchasedDocuments();
+      fetchEnrolledCourses();
     } else {
       navigate('/login');
     }
@@ -162,6 +229,40 @@ const Profile: FC = () => {
                       <p className="mt-1 text-lg text-gray-900">{user.email}</p>
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-gray-600">Номер телефона</label>
+                      {isEditingPhone ? (
+                        <div className="mt-1 flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={phoneInput}
+                            onChange={(e) => setPhoneInput(e.target.value)}
+                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+                            placeholder="+7 (999) 000-00-00"
+                            disabled={isSavingPhone}
+                          />
+                          <button
+                            onClick={handleSavePhone}
+                            disabled={isSavingPhone}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-md text-sm transition-colors"
+                          >
+                            {isSavingPhone ? '...' : 'Сохранить'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsEditingPhone(false);
+                              setPhoneInput(user.phone || '');
+                            }}
+                            disabled={isSavingPhone}
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-md text-sm transition-colors"
+                          >
+                            Отмена
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="mt-1 text-lg text-gray-900">{user.phone || 'Не указан'}</p>
+                      )}
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-600">ID пользователя</label>
                       <p className="mt-1 text-lg text-gray-900">{user.id}</p>
                     </div>
@@ -198,7 +299,7 @@ const Profile: FC = () => {
                       <div className="text-sm text-blue-700">Купленных документов</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">0</div>
+                      <div className="text-2xl font-bold text-blue-600">{enrolledCourses.length}</div>
                       <div className="text-sm text-blue-700">Семинаров</div>
                     </div>
                   </div>
@@ -233,7 +334,9 @@ const Profile: FC = () => {
                 <div className="bg-purple-50 p-6 rounded-lg">
                   <h2 className="text-xl font-semibold text-purple-800 mb-4">Настройки профиля</h2>
                   <div className="space-y-3">
-                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <button 
+                      onClick={() => setIsEditingPhone(true)}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center">
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
@@ -328,6 +431,82 @@ const Profile: FC = () => {
                                 {purchase.price_paid} ₸
                               </span>
                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Enrolled Courses Section */}
+            <div className="mt-8">
+              <div className="bg-white rounded-xl shadow-xl p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Мои курсы и семинары</h2>
+                
+                {loadingCourses ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Загрузка курсов...</p>
+                  </div>
+                ) : enrolledCourses.length === 0 ? (
+                  <div className="text-center py-12">
+                     <div className="text-gray-400 mb-4">
+                      <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500 text-lg">У вас пока нет активных курсов</p>
+                    <button
+                      onClick={() => navigate('/courses')}
+                      className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Посмотреть каталог курсов
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {enrolledCourses.map((enrollment) => (
+                      <div key={enrollment.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                              {enrollment.course.title}
+                            </h3>
+                            <p className="text-gray-600 mb-3 line-clamp-2">
+                              {enrollment.course.description}
+                            </p>
+                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                              <span className="flex items-center">
+                                <svg className="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {enrollment.status === 'enrolled' ? 'Записан' : enrollment.status}
+                              </span>
+                              <span className="flex items-center">
+                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                От {new Date(enrollment.enrolled_at).toLocaleDateString('ru-RU')}
+                              </span>
+                              {enrollment.course.category && (
+                                <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
+                                  {enrollment.course.category.name}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="ml-6 flex flex-col items-end">
+                            <button
+                              onClick={() => navigate(`/learn/${enrollment.course.id}`)}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+                            >
+                              Перейти к курсу
+                              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
                           </div>
                         </div>
                       </div>

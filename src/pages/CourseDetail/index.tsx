@@ -4,7 +4,7 @@ import { useAppSelector } from 'store/hooks';
 import { useAuthModal } from 'hooks/useAuthModal';
 import AuthModal from 'components/shared/AuthModal';
 import { coursesAPI, type Course, type CourseMaterial } from 'api/courses';
-import { BASE_URL } from 'constants/endpoints.ts';
+import { BASE_URL, COURSE_ENDPOINTS } from 'constants/endpoints.ts';
 
 const CourseDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,7 +15,7 @@ const CourseDetail: FC = () => {
   const [materials, setMaterials] = useState<CourseMaterial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [enrolled] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
   const [enrolling] = useState(false);
 
   useEffect(() => {
@@ -30,6 +30,23 @@ const CourseDetail: FC = () => {
         ]);
         setCourse(courseData);
         setMaterials(materialsData);
+
+        if (isAuthenticated) {
+          const token = localStorage.getItem('auth_token');
+          if (token) {
+            const resp = await fetch(COURSE_ENDPOINTS.USER_ENROLLED_COURSES, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+              },
+            });
+            if (resp.ok) {
+              const data = await resp.json();
+              const isEnrolled = data.enrollments.some((e: any) => e.course_id === parseInt(id));
+              setEnrolled(isEnrolled);
+            }
+          }
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Ошибка загрузки курса');
       } finally {
@@ -38,7 +55,7 @@ const CourseDetail: FC = () => {
     };
 
     fetchCourse();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   const formatPrice = (price: number): string => {
     return `${price}₸`;

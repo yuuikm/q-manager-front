@@ -20,6 +20,7 @@ export const ROUTES = {
   COURSES_OFFLINE: '/courses/offline',
   COURSES_SELF: '/courses/self-education',
   COURSE_DETAIL: '/courses/:id',
+  LEARN_COURSE: '/learn/:id',
 
   // Checkout
   CHECKOUT: '/checkout',
