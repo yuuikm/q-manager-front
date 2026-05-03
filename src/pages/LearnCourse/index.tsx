@@ -1,4 +1,4 @@
-import { type FC, useState, useEffect, useCallback, useRef } from 'react';
+import { type FC, useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { coursesAPI, type Course, type CourseMaterial, type Test, type TestQuestion } from 'api/courses';
