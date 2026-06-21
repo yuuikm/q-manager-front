@@ -5,7 +5,6 @@ import FormWrapper from 'shared/FormWrapper';
 import { ROUTES } from 'constants/routes';
 import { useAppSelector } from 'store/hooks';
 import { API_BASE_URL } from 'constants/endpoints';
-import MockCard from './MockCard';
 
 interface CheckoutItem {
   id: number;
@@ -22,8 +21,8 @@ const Checkout: FC = () => {
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showPayment, setShowPayment] = useState(false);
-  const [formValues, setFormValues] = useState<typeof initialValues | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const type = searchParams.get('type');
@@ -41,7 +40,6 @@ const Checkout: FC = () => {
       return;
     }
 
-    // Fetch item details based on type and id
     fetchItemDetails(type as 'course' | 'document', parseInt(id));
   }, [searchParams]);
 
@@ -76,18 +74,13 @@ const Checkout: FC = () => {
     }
   };
 
-  const handleSubmit = (values: typeof initialValues) => {
-    setFormValues(values);
-    setShowPayment(true);
-  };
-
-  const executePurchase = async () => {
-    if (!checkoutItem || !formValues) return;
+  const handleSubmit = async (values: typeof initialValues) => {
+    if (!checkoutItem) return;
 
     try {
+      setSubmitting(true);
       setError(null);
 
-      // Create purchase/enrollment request
       const endpoint = checkoutItem.type === 'course'
         ? `${API_BASE_URL}/courses/${checkoutItem.id}/enroll`
         : `${API_BASE_URL}/documents/${checkoutItem.id}/purchase`;
@@ -102,26 +95,25 @@ const Checkout: FC = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          first_name: formValues.firstName,
-          last_name: formValues.lastName,
-          phone: formValues.phone,
-          email: formValues.email,
-          company: formValues.company || null,
-          notes: formValues.notes || null,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          phone: values.phone,
+          email: values.email,
+          company: values.company || null,
+          notes: values.notes || null,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Ошибка при оформлении заказа');
+        throw new Error(errorData.message || 'Ошибка при подаче заявки');
       }
 
-      // Show success message and redirect to profile
-      alert('Заказ успешно оформлен! Вы можете найти его в своем профиле.');
-      navigate(ROUTES.PROFILE);
+      setSubmitted(true);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Произошла ошибка при оформлении заказа');
-      setShowPayment(false);
+      setError(error instanceof Error ? error.message : 'Произошла ошибка при подаче заявки');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -133,7 +125,7 @@ const Checkout: FC = () => {
     );
   }
 
-  if (error || !checkoutItem) {
+  if (error && !checkoutItem) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
@@ -158,15 +150,77 @@ const Checkout: FC = () => {
     );
   }
 
+  // Success state after submission
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
+        <div className="max-w-lg w-full text-center">
+          <div className="bg-white py-10 px-8 shadow-xl rounded-2xl border border-gray-100">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Заявка успешно отправлена!
+            </h2>
+            <p className="text-gray-600 mb-2">
+              Ваша заявка на {checkoutItem?.type === 'course' ? 'курс' : 'документ'} «{checkoutItem?.title}» принята.
+            </p>
+            <p className="text-gray-500 text-sm mb-8">
+              Наш менеджер свяжется с вами в ближайшее время для уточнения деталей и оформления договора. 
+              Вы можете отслеживать статус заявки в своём профиле.
+            </p>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">Этапы обработки заявки:</h3>
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0">✓</span>
+                  <span className="text-green-700 font-medium">Заявка создана</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <span className="w-6 h-6 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0">2</span>
+                  <span className="text-gray-500">Оформление договора</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <span className="w-6 h-6 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0">3</span>
+                  <span className="text-gray-500">Оплата и получение доступа</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate(ROUTES.PROFILE)}
+                className="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              >
+                Перейти в профиль
+              </button>
+              <button
+                onClick={() => navigate(ROUTES.HOME)}
+                className="flex-1 bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                На главную
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!checkoutItem) return null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
-            Оформление заказа
+            Подать заявку
           </h1>
           <p className="text-lg text-gray-600">
-            Заполните данные для {checkoutItem.type === 'course' ? 'записи на курс' : 'покупки документа'}
+            Заполните данные для {checkoutItem.type === 'course' ? 'записи на курс' : 'приобретения документа'}
           </p>
         </div>
 
@@ -206,12 +260,40 @@ const Checkout: FC = () => {
               </div>
             </div>
 
-            <div className="border-t border-gray-200 pt-4">
+            <div className="border-t border-gray-200 pt-4 mb-6">
               <div className="flex justify-between items-center text-lg font-semibold">
-                <span className="text-gray-900">Итого:</span>
+                <span className="text-gray-900">Стоимость:</span>
                 <span className="text-indigo-600">
                   {checkoutItem.price > 0 ? `${checkoutItem.price}₸` : 'Бесплатно'}
                 </span>
+              </div>
+            </div>
+
+            {/* How it works */}
+            <div className="bg-gray-50 rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Как это работает:</h3>
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <span className="w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5 flex-shrink-0">1</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Подайте заявку</p>
+                    <p className="text-xs text-gray-500">Заполните контактные данные</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <span className="w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5 flex-shrink-0">2</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Оформление договора</p>
+                    <p className="text-xs text-gray-500">Менеджер свяжется с вами</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <span className="w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5 flex-shrink-0">3</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Оплата</p>
+                    <p className="text-xs text-gray-500">После оплаты вы получите доступ к материалу</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -229,9 +311,9 @@ const Checkout: FC = () => {
             )}
           </div>
 
-          {/* Checkout Form */}
+          {/* Application Form */}
           <div className="bg-white shadow-xl rounded-xl border border-gray-100 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Данные для заказа</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Контактные данные</h2>
             
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -244,26 +326,18 @@ const Checkout: FC = () => {
               </div>
             )}
 
-            {showPayment ? (
-              <MockCard 
-                amount={checkoutItem.price} 
-                isAllowedUser={user?.username === 'mmorozov'} 
-                onSuccess={executePurchase} 
-              />
-            ) : (
-              <FormWrapper
-                fields={fields}
-                initialValues={user ? {
-                  ...initialValues,
-                  firstName: user.first_name || '',
-                  lastName: user.last_name || '',
-                  email: user.email || '',
-                } : initialValues}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-                submitText={checkoutItem.type === 'course' ? 'Перейти к оплате курса' : 'Перейти к оплате документа'}
-              />
-            )}
+            <FormWrapper
+              fields={fields}
+              initialValues={user ? {
+                ...initialValues,
+                firstName: user.first_name || '',
+                lastName: user.last_name || '',
+                email: user.email || '',
+              } : initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              submitText={submitting ? 'Отправка...' : 'Подать заявку'}
+            />
           </div>
         </div>
       </div>

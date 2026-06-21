@@ -23,6 +23,7 @@ interface PurchasedDocument {
     } | null;
   };
   price_paid: number;
+  payment_status: 'created' | 'contract' | 'paid';
   purchased_at: string;
 }
 
@@ -40,6 +41,7 @@ interface EnrolledCourse {
     } | null;
   };
   status: string;
+  payment_status: 'created' | 'contract' | 'paid';
   enrolled_at: string;
 }
 
@@ -234,6 +236,13 @@ const Profile: FC = () => {
     if (status === 'in_progress') return { text: 'В процессе', color: 'bg-orange-100 text-orange-700' };
     if (status === 'completed') return { text: 'Завершён', color: 'bg-green-100 text-green-700' };
     return { text: status, color: 'bg-gray-100 text-gray-600' };
+  };
+
+  const paymentStatusLabel = (status: string) => {
+    if (status === 'created') return { text: 'Заявка создана', color: 'bg-yellow-100 text-yellow-800' };
+    if (status === 'contract') return { text: 'Оформление договора', color: 'bg-blue-100 text-blue-800' };
+    if (status === 'paid') return { text: 'Оплачено', color: 'bg-green-100 text-green-800' };
+    return { text: status, color: 'bg-gray-100 text-gray-800' };
   };
 
   return (
@@ -450,19 +459,26 @@ const Profile: FC = () => {
                         {purchase.document.category && (
                           <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{purchase.document.category.name}</span>
                         )}
+                        <span className={`px-2 py-0.5 rounded-full font-medium ${paymentStatusLabel(purchase.payment_status || 'paid').color}`}>
+                          {paymentStatusLabel(purchase.payment_status || 'paid').text}
+                        </span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <button
-                        onClick={() => handleDownloadDocument(purchase.document.id, purchase.document.file_name)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors text-sm flex items-center gap-1.5"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Скачать
-                      </button>
-                      <span className="text-sm font-semibold text-green-600">{purchase.price_paid} ₸</span>
+                      {(!purchase.payment_status || purchase.payment_status === 'paid') ? (
+                        <button
+                          onClick={() => handleDownloadDocument(purchase.document.id, purchase.document.file_name)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors text-sm flex items-center gap-1.5"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          Скачать
+                        </button>
+                      ) : (
+                        <span className="text-sm text-gray-500 italic mt-2">Доступ закрыт до оплаты</span>
+                      )}
+                      <span className="text-sm font-semibold text-green-600 mt-1">{purchase.price_paid} ₸</span>
                     </div>
                   </div>
                 ))}
@@ -499,22 +515,34 @@ const Profile: FC = () => {
                         <h3 className="font-semibold text-gray-900 mb-1">{enrollment.course.title}</h3>
                         <p className="text-gray-500 text-sm line-clamp-2 mb-3">{enrollment.course.description}</p>
                         <div className="flex flex-wrap items-center gap-3 text-xs">
-                          <span className={`px-2 py-0.5 rounded-full font-medium ${status.color}`}>{status.text}</span>
+                          {(!enrollment.payment_status || enrollment.payment_status === 'paid') && (
+                            <span className={`px-2 py-0.5 rounded-full font-medium ${status.color}`}>{status.text}</span>
+                          )}
+                          <span className={`px-2 py-0.5 rounded-full font-medium ${paymentStatusLabel(enrollment.payment_status || 'paid').color}`}>
+                            {paymentStatusLabel(enrollment.payment_status || 'paid').text}
+                          </span>
                           <span className="text-gray-400">От {new Date(enrollment.enrolled_at).toLocaleDateString('ru-RU')}</span>
                           {enrollment.course.category && (
                             <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">{enrollment.course.category.name}</span>
                           )}
                         </div>
                       </div>
-                      <button
-                        onClick={() => navigate(`/learn/${enrollment.course.id}`)}
-                        className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors text-sm flex items-center gap-1.5"
-                      >
-                        Перейти к курсу
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
+                      {(!enrollment.payment_status || enrollment.payment_status === 'paid') ? (
+                        <button
+                          onClick={() => navigate(`/learn/${enrollment.course.id}`)}
+                          className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors text-sm flex items-center gap-1.5"
+                        >
+                          Перейти к курсу
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <div className="flex flex-col items-end flex-shrink-0">
+                          <span className="text-sm text-gray-500 italic mt-2">Доступ закрыт до оплаты</span>
+                          <span className="text-sm font-semibold text-green-600 mt-1">{enrollment.course.price} ₸</span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

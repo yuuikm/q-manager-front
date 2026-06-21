@@ -103,6 +103,9 @@ const LearnCourse: FC = () => {
             const data = await resp.json();
             const enrollment = data.enrollments.find((e: any) => e.course_id === courseId);
             if (!enrollment) throw new Error('Вы не записаны на этот курс');
+            if (enrollment.payment_status && enrollment.payment_status !== 'paid') {
+              throw new Error('Доступ к курсу закрыт до подтверждения оплаты. Пожалуйста, дождитесь смены статуса заявки или свяжитесь с менеджером.');
+            }
             setCurrentStepIndex(enrollment.current_step_index || 0);
           }
         }
