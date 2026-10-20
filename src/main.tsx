@@ -8,6 +8,7 @@ import 'styles/index.css';
 import App from 'pages/App.tsx';
 import Header from 'pages/layout/Header';
 import Footer from 'pages/layout/Footer';
+import FaqBotWidget from 'components/FaqBotWidget';
 
 function LayoutWrapper() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function LayoutWrapper() {
       {!isImmersivePage && <Header />}
       <App />
       {!isImmersivePage && <Footer />}
+      <FaqBotWidget />
     </>
   );
 }

@@ -1,4 +1,8 @@
-export const BASE_URL = 'http://localhost:8000';
+export const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8000'
+    : 'https://back.q-manager.kz');
 
 export const API_BASE_URL = `${BASE_URL}/api`;
 
@@ -48,6 +52,11 @@ export const SLIDER_ENDPOINTS = {
   GET_SLIDERS: `${API_BASE_URL}/sliders`,
 } as const;
 
+export const FAQ_ENDPOINTS = {
+  GET_FAQS: `${API_BASE_URL}/faqs`,
+  GET_FAQ_ITEM: `${API_BASE_URL}/faqs`,
+} as const;
+
 export const API_ENDPOINTS = {
   PING: `${API_BASE_URL}/ping`,
   USERS: `${API_BASE_URL}/users`,
@@ -55,4 +64,5 @@ export const API_ENDPOINTS = {
   ...NEWS_ENDPOINTS,
   ...COURSE_ENDPOINTS,
   ...SLIDER_ENDPOINTS,
+  ...FAQ_ENDPOINTS,
 } as const;
