@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -15,6 +15,13 @@ function LayoutWrapper() {
   const isImmersivePage = location.pathname === '/login' || 
                           location.pathname === '/register' || 
                           location.pathname.startsWith('/learn');
+
+  // SPA Route tracking for Yandex.Metrika
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof (window as any).ym === 'function') {
+      (window as any).ym(95516632, 'hit', window.location.href);
+    }
+  }, [location.pathname, location.search]);
 
   return (
     <>
