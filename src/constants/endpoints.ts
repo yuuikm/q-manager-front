@@ -55,6 +55,7 @@ export const SLIDER_ENDPOINTS = {
 export const FAQ_ENDPOINTS = {
   GET_FAQS: `${API_BASE_URL}/faqs`,
   GET_FAQ_ITEM: `${API_BASE_URL}/faqs`,
+  LEADS: `${API_BASE_URL}/leads`,
 } as const;
 
 export const API_ENDPOINTS = {

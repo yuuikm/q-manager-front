@@ -9,4 +9,4 @@ export * from './faq';
 export type { LoginCredentials, RegisterData, AuthResponse, ApiError } from './auth';
 export type { NewsItem, NewsCategory, NewsResponse } from './news';
 export type { Course, CourseMaterial, CourseCategory, CourseResponse } from './courses';
-export type { FaqItem } from './faq';
+export type { FaqItem, LeadFormData } from './faq';
