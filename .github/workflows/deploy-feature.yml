@@ -3,6 +3,8 @@ name: Q-manager front feature
 on:
   push:
     branches: [ "feature" ]
+  pull_request:
+    branches: [ "feature" ]
 
 jobs:
   build-and-deploy:
