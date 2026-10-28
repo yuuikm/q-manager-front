@@ -1,13 +1,21 @@
 import { type FC, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { newsAPI, type NewsItem } from 'api/news';
-import { routeHelpers } from 'constants/routes';
-import ContentCard, { type ContentCardData } from 'components/shared/ContentCard';
+import { useNavigate, Link } from 'react-router-dom';
+import { newsAPI } from 'api/news';
+import {
+  NEWS_SECTION_HEADER,
+  FALLBACK_NEWS,
+} from './config';
+
+interface DisplayNewsCard {
+  id: number;
+  date: string;
+  title: string;
+  description: string;
+}
 
 const News: FC = () => {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const [news, setNews] = useState<DisplayNewsCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,9 +26,27 @@ const News: FC = () => {
           featured: true,
           page: 1,
         });
-        setNews(response.data.slice(0, 6)); // Show only 6 featured news items
+
+        if (response.data && response.data.length > 0) {
+          const mapped: DisplayNewsCard[] = response.data.slice(0, 3).map((item) => ({
+            id: item.id,
+            date: item.published_at
+              ? new Date(item.published_at).toLocaleDateString('ru-RU', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : 'Недавно',
+            title: item.title,
+            description: item.description || 'Актуальные изменения в области стандартизации и сертификации в Казахстане.',
+          }));
+          setNews(mapped);
+        } else {
+          setNews(FALLBACK_NEWS);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка загрузки новостей');
+        console.error('Error fetching news:', err);
+        setNews(FALLBACK_NEWS);
       } finally {
         setLoading(false);
       }
@@ -29,79 +55,67 @@ const News: FC = () => {
     fetchNews();
   }, []);
 
-  const handleViewDetails = (item: ContentCardData) => {
-    navigate(routeHelpers.newsDetail(item.id));
-  };
+  return (
+    <section className="py-14 bg-white border-b border-slate-200" id="news">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <span className="text-sm sm:text-base font-bold uppercase tracking-wider text-brand-700">
+              {NEWS_SECTION_HEADER.tag}
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
+              {NEWS_SECTION_HEADER.title}
+            </h2>
+          </div>
+          <Link
+            to={NEWS_SECTION_HEADER.allNewsPath}
+            className="text-base sm:text-lg font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
+          >
+            <span>{NEWS_SECTION_HEADER.allNewsLabel}</span>
+            <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">
+              arrow_forward
+            </span>
+          </Link>
+        </div>
 
-  const handlePurchase = (item: ContentCardData) => {
-    // News doesn't require purchase, just view details
-    navigate(routeHelpers.newsDetail(item.id));
-  };
-
-  if (loading) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Последние новости</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="bg-gray-200 animate-pulse rounded-lg h-64"></div>
+        {/* 3 News Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="p-6 rounded-xl border border-slate-200 bg-slate-50 h-44 animate-pulse"
+              />
             ))}
           </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Последние новости</h2>
-          <div className="text-center text-red-600">
-            <p>{error}</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Последние новости</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Будьте в курсе последних событий в области менеджмента качества и сертификации
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {news.map((item) => (
-            <ContentCard
-              key={item.id}
-              item={item as ContentCardData}
-              type="news"
-              onViewDetails={handleViewDetails}
-              onPurchase={handlePurchase}
-            />
-          ))}
-        </div>
-
-        {news.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Новости пока не добавлены</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {news.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => navigate(`/news/${item.id}`)}
+                className="p-6 sm:p-7 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+              >
+                <div>
+                  <span className="text-xs sm:text-sm text-slate-500 font-medium block mb-2">
+                    {item.date}
+                  </span>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2.5 leading-snug group-hover:text-brand-700 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-base text-slate-600 line-clamp-3 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+                <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center text-base font-semibold text-brand-700 group-hover:translate-x-1 transition-transform">
+                  <span>Читать полностью</span>
+                  <span className="material-symbols-outlined text-[18px] ml-1.5">arrow_forward</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
-
-        <div className="text-center mt-12">
-          <button 
-            onClick={() => navigate('/news')}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Все новости
-          </button>
-        </div>
       </div>
     </section>
   );
