@@ -1,161 +1,190 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type FC, useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { DOCUMENT_ENDPOINTS } from 'constants/endpoints';
-import DocumentCard from 'components/DocumentCard';
+import {
+  DOCUMENTS_SECTION_HEADER,
+  FALLBACK_DOCUMENTS,
+} from './config';
 
-interface Document {
+interface DocumentsProps {
+  onPreview?: (title: string, standard: string) => void;
+  onBuy?: (docId: number, title: string) => void;
+}
+
+interface DocCardData {
   id: number;
   title: string;
-  description: string;
-  category: {
-    id: number;
-    name: string;
-  } | null;
+  description?: string;
+  standard: string;
+  fileFormat: string;
+  fileName: string;
+  fileSizeText: string;
   price: number;
-  file_name: string;
-  file_type: string;
-  file_size: number;
-  buy_number: number;
-  created_at: string;
 }
 
-interface Category {
-  name: string;
-  count: number;
-}
-
-const Documents = () => {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+const Documents: FC<DocumentsProps> = ({ onPreview, onBuy }) => {
+  const [documents, setDocuments] = useState<DocCardData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDocuments();
-    fetchCategories();
+    const fetchDocs = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(DOCUMENT_ENDPOINTS.GET_DOCUMENTS);
+        if (response.ok) {
+          const res = await response.json();
+          const items = res.data || [];
+          if (items.length > 0) {
+            const mapped: DocCardData[] = items.slice(0, 6).map((doc: any) => ({
+              id: doc.id,
+              title: doc.title,
+              description:
+                doc.description ||
+                'Официальная форма и практические инструкции для аудита и внедрения стандарта СМК.',
+              standard: doc.category?.name || 'СТ РК / ISO',
+              fileFormat: doc.file_type ? doc.file_type.toUpperCase() : 'DOCX + PDF',
+              fileName: doc.file_name || `document-${doc.id}.docx`,
+              fileSizeText: doc.file_size
+                ? `${Math.round(doc.file_size / 1024)} КБ`
+                : '350 КБ',
+              price: doc.price || 5000,
+            }));
+            setDocuments(mapped);
+          } else {
+            setDocuments(FALLBACK_DOCUMENTS);
+          }
+        } else {
+          setDocuments(FALLBACK_DOCUMENTS);
+        }
+      } catch (err) {
+        console.error('Error fetching documents:', err);
+        setDocuments(FALLBACK_DOCUMENTS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDocs();
   }, []);
 
-  const fetchDocuments = async () => {
-    try {
-      const response = await fetch(DOCUMENT_ENDPOINTS.GET_DOCUMENTS);
-      if (response.ok) {
-        const data = await response.json();
-        setDocuments(data.data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-    } finally {
-      setLoading(false);
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ru-RU').format(price) + ' ₸';
+  };
+
+  const handlePreviewClick = (title: string, standard: string) => {
+    if (onPreview) {
+      onPreview(title, standard);
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(DOCUMENT_ENDPOINTS.GET_CATEGORIES);
-      if (response.ok) {
-        const categoryData = await response.json();
-        const categoryCounts = categoryData.map((cat: any) => ({
-          name: cat.name,
-          count: documents.filter(doc => doc.category?.name === cat.name).length
-        }));
-        setCategories(categoryCounts);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  const filteredDocuments = selectedCategory === 'all' 
-    ? documents 
-    : documents.filter(doc => doc.category?.name === selectedCategory);
-
-  const handleCategoryClick = (category: string) => {
-    if (category === 'all') {
-      setSelectedCategory('all');
+  const handleBuyClick = (docId: number, title: string) => {
+    if (onBuy) {
+      onBuy(docId, title);
     } else {
-      navigate(`/documents/${category.toLowerCase()}`);
+      navigate(`/documents/view/${docId}`);
     }
   };
-
-
-  if (loading) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Загрузка документов...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Наши документы</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Изучите нашу коллекцию качественных документов по различным категориям
-          </p>
-        </div>
-
-        {/* Category Filter */}
-        <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => handleCategoryClick('all')}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-              }`}
-            >
-              Все документы ({documents.length})
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => handleCategoryClick(category.name)}
-                className="px-6 py-2 rounded-full text-sm font-medium bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 transition-colors"
-              >
-                {category.name} ({category.count})
-              </button>
-            ))}
+    <section className="py-14 bg-white border-b border-slate-200" id="docs-market">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <span className="text-sm sm:text-base font-bold uppercase tracking-wider text-brand-700">
+              {DOCUMENTS_SECTION_HEADER.tag}
+            </span>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
+              {DOCUMENTS_SECTION_HEADER.title}
+            </h2>
+            <p className="text-base sm:text-lg text-slate-600 mt-2">
+              {DOCUMENTS_SECTION_HEADER.subtitle}
+            </p>
           </div>
+          <Link
+            to={DOCUMENTS_SECTION_HEADER.allDocsPath}
+            className="text-base sm:text-lg font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
+          >
+            <span>{DOCUMENTS_SECTION_HEADER.allDocsLabel}</span>
+            <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">
+              arrow_forward
+            </span>
+          </Link>
         </div>
 
         {/* Documents Grid */}
-        {filteredDocuments.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">В этой категории документы не найдены.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredDocuments.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                onViewDetails={(doc) => {
-                  // Navigate to document details or show modal
-                  navigate(`/documents/view/${doc.id}`);
-                }}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="bg-slate-50 rounded-xl h-60 border border-slate-200 animate-pulse"
               />
             ))}
           </div>
-        )}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {documents.map((doc) => (
+              <div
+                key={doc.id}
+                className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-7 flex flex-col justify-between hover:shadow-md transition-shadow group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="px-3 py-1 bg-brand-100 text-brand-800 text-xs sm:text-sm font-semibold rounded font-mono">
+                      {doc.standard}
+                    </span>
+                    <span className="text-xs sm:text-sm font-medium text-slate-500 flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[18px] text-red-500">
+                        picture_as_pdf
+                      </span>
+                      <span>{doc.fileFormat}</span>
+                    </span>
+                  </div>
 
-        {/* View All Button */}
-        <div className="text-center mt-12">
-          <button
-            onClick={() => navigate('/documents')}
-            className="bg-blue-600 text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            Все документы
-          </button>
-        </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-2.5 line-clamp-2">
+                    {doc.title}
+                  </h3>
+
+                  {doc.description && (
+                    <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-3.5 line-clamp-3">
+                      {doc.description}
+                    </p>
+                  )}
+
+                  <p className="text-xs sm:text-sm text-slate-500 font-mono mb-1">
+                    {doc.fileName} ({doc.fileSizeText})
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 mt-4 flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl font-bold text-slate-900">
+                    {formatPrice(doc.price)}
+                  </span>
+
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => handlePreviewClick(doc.title, doc.standard)}
+                      className="px-3.5 py-2.5 text-sm sm:text-base font-semibold text-slate-700 hover:bg-slate-200 rounded-lg border border-slate-300 transition-colors"
+                    >
+                      Образец
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleBuyClick(doc.id, doc.title)}
+                      className="px-4 py-2.5 text-sm sm:text-base font-semibold bg-brand-700 text-white hover:bg-brand-800 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">download</span>
+                      <span>Купить</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
