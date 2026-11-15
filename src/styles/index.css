@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-brand-50: #EFF6FF;
   --color-brand-100: #DBEAFE;
   --color-brand-200: #BFDBFE;
@@ -14,17 +15,23 @@
   --color-brand-950: #0F172A;
   --color-surface: #F8FAFC;
   --color-surface-card: #FFFFFF;
+  --color-border-subtle: #E2E8F0;
+  --color-border-strong: #CBD5E1;
 }
 
+html,
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #F8FAFC;
   color: #1e293b;
-  font-size: 16px;
-  line-height: 1.6;
+}
+
+::selection {
+  background-color: #2563EB;
+  color: #ffffff;
 }
 
 .material-symbols-outlined {

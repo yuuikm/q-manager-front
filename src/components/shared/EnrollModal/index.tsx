@@ -66,18 +66,18 @@ const EnrollModal: FC<EnrollModalProps> = ({ isOpen, onClose, courseTitle, onSuc
         </button>
 
         <div className="flex items-center gap-2 mb-2">
-          <span className="material-symbols-outlined text-brand-700 text-[24px]">school</span>
-          <h3 className="text-lg font-bold text-slate-900">Запись на курс</h3>
+          <span className="material-symbols-outlined text-brand-700 text-[22px]">school</span>
+          <h3 className="text-base font-bold text-slate-900">Запись на курс</h3>
         </div>
 
-        <p className="text-sm font-semibold text-brand-700 mb-4 bg-brand-50 p-2.5 rounded-lg border border-brand-100">
+        <p className="text-xs font-semibold text-brand-700 mb-4 bg-brand-50 p-2.5 rounded-lg border border-brand-100">
           {courseTitle}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="text-sm font-semibold text-slate-700 block mb-1.5">
-              ФИО участника
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
+              ФИО слушателя
             </label>
             <input
               type="text"
@@ -85,32 +85,32 @@ const EnrollModal: FC<EnrollModalProps> = ({ isOpen, onClose, courseTitle, onSuc
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Иванов Сергей"
               required
-              className="w-full px-3.5 py-2.5 text-base rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
+              className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
               Телефон / WhatsApp
             </label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+7 (777) 000-00-00"
+              placeholder="+7 (701) 000-00-00"
               required
-              className="w-full px-3.5 py-2.5 text-base rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
+              className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
             />
           </div>
 
           <div>
-            <label className="text-sm font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 block mb-1">
               Формат обучения
             </label>
             <select
               value={learningMode}
               onChange={(e) => setLearningMode(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-base rounded-lg bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
+              className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
             >
               {LEARNING_MODES.map((mode) => (
                 <option key={mode} value={mode}>
@@ -123,7 +123,7 @@ const EnrollModal: FC<EnrollModalProps> = ({ isOpen, onClose, courseTitle, onSuc
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 bg-brand-700 text-white rounded-lg text-base font-bold hover:bg-brand-800 transition-colors shadow-sm mt-3 flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full py-2.5 bg-brand-700 text-white rounded-lg text-xs sm:text-sm font-semibold hover:bg-brand-800 transition-colors shadow-sm mt-3 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             <span>{submitting ? 'Отправка...' : 'Подтвердить регистрацию'}</span>
           </button>

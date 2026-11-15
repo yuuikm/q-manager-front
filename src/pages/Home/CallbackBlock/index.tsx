@@ -58,22 +58,22 @@ const CallbackBlock: FC<CallbackBlockProps> = ({ onLeadSuccess }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Column: Info & Perks */}
           <div className="lg:col-span-7 flex flex-col gap-4">
-            <span className="px-3 py-1.5 rounded-full bg-white/10 text-white text-sm font-semibold self-start border border-white/20">
+            <span className="px-2.5 py-1 rounded bg-white/10 text-white text-xs font-semibold self-start border border-white/20">
               {CALLBACK_HEADER.discountBadge}
             </span>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               {CALLBACK_HEADER.title}
             </h2>
 
-            <p className="text-base sm:text-lg text-brand-100 leading-relaxed max-w-xl">
+            <p className="text-sm text-brand-100 leading-relaxed max-w-xl">
               {CALLBACK_HEADER.subtitle}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 text-[15px] sm:text-base font-medium text-brand-100">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs sm:text-sm font-medium text-brand-100">
               {CALLBACK_FEATURES.map((feature: CallbackFeature) => (
                 <div key={feature.id} className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-emerald-400 text-[22px]">
+                  <span className="material-symbols-outlined text-emerald-400 text-[18px]">
                     check_circle
                   </span>
                   <span>{feature.text}</span>
@@ -83,11 +83,11 @@ const CallbackBlock: FC<CallbackBlockProps> = ({ onLeadSuccess }) => {
           </div>
 
           {/* Right Column: Lead Form Card */}
-          <div className="lg:col-span-5 bg-white text-slate-800 p-6 sm:p-8 rounded-2xl shadow-2xl">
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5">
+          <div className="lg:col-span-5 bg-white text-slate-800 p-6 rounded-2xl shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 mb-1">
               Заявка на обучение или аудит
             </h3>
-            <p className="text-sm sm:text-base text-slate-500 mb-6">
+            <p className="text-xs text-slate-500 mb-5">
               Свяжемся с вами в течение 15 минут в рабочее время
             </p>
 
@@ -134,18 +134,18 @@ const CallbackBlock: FC<CallbackBlockProps> = ({ onLeadSuccess }) => {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+7 (701) 000-00-00"
                     required
-                    className="w-full px-4 py-3 text-base rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-slate-800 block mb-1.5">
+                  <label className="text-xs font-semibold text-slate-800 block mb-1">
                     Интересующая программа
                   </label>
                   <select
                     value={program}
                     onChange={(e) => setProgram(e.target.value)}
-                    className="w-full px-4 py-3 text-base rounded-lg bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-700"
                   >
                     {PROGRAM_OPTIONS.map((opt) => (
                       <option key={opt} value={opt}>
@@ -158,9 +158,9 @@ const CallbackBlock: FC<CallbackBlockProps> = ({ onLeadSuccess }) => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 bg-brand-700 text-white rounded-lg text-base font-bold hover:bg-brand-800 transition-colors shadow-sm flex items-center justify-center gap-2 mt-2 disabled:opacity-60"
+                  className="w-full py-3 bg-brand-700 text-white rounded-lg text-sm font-semibold hover:bg-brand-800 transition-colors shadow-sm flex items-center justify-center gap-2 mt-2 disabled:opacity-60"
                 >
-                  <span className="material-symbols-outlined text-[20px]">send</span>
+                  <span className="material-symbols-outlined text-[18px]">send</span>
                   <span>{isSubmitting ? 'Отправка...' : 'Отправить заявку'}</span>
                 </button>
               </form>

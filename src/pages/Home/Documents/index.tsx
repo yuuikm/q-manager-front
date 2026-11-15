@@ -92,22 +92,22 @@ const Documents: FC<DocumentsProps> = ({ onPreview, onBuy }) => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <span className="text-sm sm:text-base font-bold uppercase tracking-wider text-brand-700">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
               {DOCUMENTS_SECTION_HEADER.tag}
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 tracking-tight">
               {DOCUMENTS_SECTION_HEADER.title}
             </h2>
-            <p className="text-base sm:text-lg text-slate-600 mt-2">
+            <p className="text-sm text-slate-600 mt-1">
               {DOCUMENTS_SECTION_HEADER.subtitle}
             </p>
           </div>
           <Link
             to={DOCUMENTS_SECTION_HEADER.allDocsPath}
-            className="text-base sm:text-lg font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
+            className="text-xs sm:text-sm font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
           >
             <span>{DOCUMENTS_SECTION_HEADER.allDocsLabel}</span>
-            <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">
+            <span className="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">
               arrow_forward
             </span>
           </Link>
@@ -128,55 +128,55 @@ const Documents: FC<DocumentsProps> = ({ onPreview, onBuy }) => {
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-7 flex flex-col justify-between hover:shadow-md transition-shadow group"
+                className="bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between hover:shadow-md transition-shadow group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="px-3 py-1 bg-brand-100 text-brand-800 text-xs sm:text-sm font-semibold rounded font-mono">
+                    <span className="px-2 py-0.5 bg-brand-100 text-brand-800 text-xs font-semibold rounded font-mono">
                       {doc.standard}
                     </span>
-                    <span className="text-xs sm:text-sm font-medium text-slate-500 flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[18px] text-red-500">
+                    <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-red-500">
                         picture_as_pdf
                       </span>
                       <span>{doc.fileFormat}</span>
                     </span>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-2.5 line-clamp-2">
+                  <h3 className="text-base font-bold text-slate-900 leading-snug mb-1 line-clamp-2">
                     {doc.title}
                   </h3>
 
                   {doc.description && (
-                    <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-3.5 line-clamp-3">
+                    <p className="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
                       {doc.description}
                     </p>
                   )}
 
-                  <p className="text-xs sm:text-sm text-slate-500 font-mono mb-1">
+                  <p className="text-[11px] text-slate-600 font-mono mb-3">
                     {doc.fileName} ({doc.fileSizeText})
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-200 mt-4 flex items-center justify-between">
-                  <span className="text-xl sm:text-2xl font-bold text-slate-900">
+                <div className="pt-3 border-t border-slate-200 mt-2 flex items-center justify-between">
+                  <span className="text-lg font-bold text-slate-900">
                     {formatPrice(doc.price)}
                   </span>
 
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => handlePreviewClick(doc.title, doc.standard)}
-                      className="px-3.5 py-2.5 text-sm sm:text-base font-semibold text-slate-700 hover:bg-slate-200 rounded-lg border border-slate-300 transition-colors"
+                      className="px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-200 rounded-lg border border-slate-300 transition-colors"
                     >
                       Образец
                     </button>
                     <button
                       type="button"
                       onClick={() => handleBuyClick(doc.id, doc.title)}
-                      className="px-4 py-2.5 text-sm sm:text-base font-semibold bg-brand-700 text-white hover:bg-brand-800 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs"
+                      className="px-3 py-1.5 text-xs font-semibold bg-brand-700 text-white hover:bg-brand-800 rounded-lg transition-colors flex items-center gap-1 shadow-xs"
                     >
-                      <span className="material-symbols-outlined text-[18px]">download</span>
+                      <span className="material-symbols-outlined text-[16px]">download</span>
                       <span>Купить</span>
                     </button>
                   </div>

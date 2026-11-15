@@ -155,16 +155,16 @@ const Slider: FC = () => {
                 {/* Left Text Content */}
                 <div className="max-w-2xl flex flex-col justify-center gap-3 sm:gap-4 lg:gap-5 w-full">
                   <div
-                    className={`inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold border ${getBadgeStyle(
+                    className={`inline-flex items-center gap-2 self-start px-3 py-1 rounded-full text-xs font-semibold border ${getBadgeStyle(
                       slide.badgeVariant
                     )}`}
                   >
                     {slide.badgeIcon ? (
-                      <span className="material-symbols-outlined text-[18px]">
+                      <span className="material-symbols-outlined text-[16px]">
                         {slide.badgeIcon}
                       </span>
                     ) : (
-                      <span className="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-brand-600 animate-pulse" />
                     )}
                     <span>{slide.badgeText}</span>
                   </div>
@@ -181,11 +181,11 @@ const Slider: FC = () => {
                   <div className="flex flex-wrap items-center gap-3 pt-1 sm:pt-2">
                     <a
                       href={slide.primaryButtonHref}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-700 text-white font-semibold text-base hover:bg-brand-800 transition-colors shadow-sm"
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand-700 text-white font-medium text-sm hover:bg-brand-800 transition-colors shadow-sm"
                     >
                       <span>{slide.primaryButtonText}</span>
                       {slide.primaryButtonIcon && (
-                        <span className="material-symbols-outlined text-[20px]">
+                        <span className="material-symbols-outlined text-[18px]">
                           {slide.primaryButtonIcon}
                         </span>
                       )}
@@ -194,10 +194,10 @@ const Slider: FC = () => {
                     {slide.secondaryButtonText && (
                       <a
                         href={slide.secondaryButtonHref || '#callback-block'}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 text-slate-800 font-semibold text-base hover:bg-slate-200 transition-colors border border-slate-200"
+                        className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-slate-100 text-slate-800 font-medium text-sm hover:bg-slate-200 transition-colors border border-slate-200"
                       >
                         {slide.secondaryButtonIcon && (
-                          <span className="material-symbols-outlined text-brand-600 text-[20px]">
+                          <span className="material-symbols-outlined text-brand-600 text-[18px]">
                             {slide.secondaryButtonIcon}
                           </span>
                         )}

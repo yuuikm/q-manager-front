@@ -30,19 +30,19 @@ const PreviewModal: FC<PreviewModalProps> = ({ isOpen, onClose, title, standard 
           <span className="material-symbols-outlined text-[20px]">close</span>
         </button>
 
-        <div className="flex items-center gap-2.5 mb-3.5">
-          <span className="material-symbols-outlined text-brand-700 text-[24px]">description</span>
-          <h3 className="text-lg font-bold text-slate-900">Предосмотр образца документа</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="material-symbols-outlined text-brand-700 text-[22px]">description</span>
+          <h3 className="text-base font-bold text-slate-900">Предосмотр образца документа</h3>
         </div>
 
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 mb-4">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4">
           <span className="text-xs font-mono uppercase bg-brand-100 text-brand-800 px-2 py-0.5 rounded font-semibold">
             {standard || 'ISO 9001:2015'}
           </span>
-          <h4 className="text-base font-bold text-slate-900 mt-2">{title}</h4>
+          <h4 className="text-sm font-bold text-slate-900 mt-1">{title}</h4>
         </div>
 
-        <div className="border border-slate-200 rounded-lg p-4 text-xs sm:text-sm text-slate-700 bg-white space-y-3 font-mono h-52 overflow-y-auto leading-relaxed">
+        <div className="border border-slate-200 rounded-lg p-3 text-xs text-slate-700 bg-white space-y-2 font-mono h-48 overflow-y-auto leading-relaxed">
           <p className="font-bold text-slate-900">1. НАЗНАЧЕНИЕ И ОБЛАСТЬ ПРИМЕНЕНИЯ</p>
           <p>
             1.1. Настоящая документированная процедура устанавливает единый порядок выполнения
@@ -55,35 +55,24 @@ const PreviewModal: FC<PreviewModalProps> = ({ isOpen, onClose, title, standard 
             <br />
             2.2. Закон Республики Казахстан «О техническом регулировании».
           </p>
-          <p className="font-bold text-slate-900">3. ТЕРМИНЫ, ОПРЕДЕЛЕНИЯ И СОКРАЩЕНИЯ</p>
+          <p className="font-bold text-slate-900">3. ОБЩИЕ ПОЛОЖЕНИЯ</p>
           <p>
-            3.1. В рамках документа используются типовые формуляры регистрации записей качества и
-            матрицы распределения ответственности (RACI).
-          </p>
-          <p className="font-bold text-slate-900">4. ПОРЯДОК УПРАВЛЕНИЯ И АРХИВИРОВАНИЯ</p>
-          <p>
-            4.1. Все формы и протоколы подлежат обязательной регистрации в электронном реестре
-            предприятия.
+            3.1. [Фрагмент текста скрыт. Полная версия регламента с формами протоколов и матрицами доступна после оформления].
           </p>
         </div>
 
-        <div className="mt-5 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-          >
-            Закрыть
-          </button>
+        <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-100">
+          <span className="text-xs text-slate-500">Формат: DOCX + PDF (А4)</span>
           <button
             type="button"
             onClick={() => {
               onClose();
               navigate('/documents');
             }}
-            className="px-5 py-2.5 text-sm sm:text-base font-semibold bg-brand-700 text-white hover:bg-brand-800 rounded-lg transition-colors shadow-xs"
+            className="px-4 py-2 bg-brand-700 text-white rounded-lg text-xs font-semibold hover:bg-brand-800 transition-colors flex items-center gap-1.5 shadow-sm"
           >
-            Купить полную версию (5 000 ₸)
+            <span className="material-symbols-outlined text-[16px]">shopping_cart</span>
+            <span>Купить полную версию</span>
           </button>
         </div>
       </div>

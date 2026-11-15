@@ -13,22 +13,22 @@ const ManagerHelp: FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <span className="text-sm sm:text-base font-bold uppercase tracking-wider text-brand-700">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
               {MANAGER_HELP_HEADER.tag}
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mt-1.5 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 tracking-tight">
               {MANAGER_HELP_HEADER.title}
             </h2>
-            <p className="text-base sm:text-lg text-slate-600 mt-2">
+            <p className="text-sm text-slate-600 mt-1">
               {MANAGER_HELP_HEADER.subtitle}
             </p>
           </div>
           <Link
             to={MANAGER_HELP_HEADER.allLinkPath}
-            className="text-base sm:text-lg font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
+            className="text-xs sm:text-sm font-semibold text-brand-700 hover:text-brand-800 flex items-center gap-1 group"
           >
             <span>{MANAGER_HELP_HEADER.allLinkText}</span>
-            <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">
+            <span className="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">
               arrow_forward
             </span>
           </Link>
@@ -39,30 +39,30 @@ const ManagerHelp: FC = () => {
           {MANAGER_HELP_ITEMS.map((item: ManagerHelpItem) => (
             <div
               key={item.id}
-              className="bg-white border border-slate-200 rounded-xl p-6 sm:p-7 hover:border-brand-300 hover:shadow-md transition-all flex flex-col justify-between group"
+              className="bg-white border border-slate-200 rounded-xl p-5 hover:border-brand-300 hover:shadow-md transition-all flex flex-col justify-between group"
             >
               <div>
                 <div
-                  className={`w-11 h-11 rounded-lg ${item.iconBgClass} ${item.iconColorClass} flex items-center justify-center mb-4`}
+                  className={`w-10 h-10 rounded-lg ${item.iconBgClass} ${item.iconColorClass} flex items-center justify-center mb-3`}
                 >
-                  <span className="material-symbols-outlined text-[24px]">{item.icon}</span>
+                  <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 mb-2 leading-snug">
+                <h3 className="text-base font-bold text-slate-900 mb-1.5 leading-snug">
                   {item.title}
                 </h3>
 
-                <p className="text-[15px] sm:text-base text-slate-600 mb-4 leading-relaxed">
+                <p className="text-xs text-slate-600 mb-4 leading-relaxed">
                   {item.description}
                 </p>
               </div>
 
               <Link
                 to={item.path}
-                className="text-base font-semibold text-brand-700 hover:underline flex items-center gap-1 pt-3.5 border-t border-slate-100"
+                className="text-xs font-semibold text-brand-700 hover:underline flex items-center gap-1 pt-3 border-t border-slate-100"
               >
                 <span>{item.actionLabel}</span>
-                <span className="material-symbols-outlined text-[18px]">
+                <span className="material-symbols-outlined text-[16px]">
                   {item.actionIcon}
                 </span>
               </Link>

@@ -5,6 +5,7 @@ export interface HeaderDropdownChild {
   path: string;
   icon?: string;
   description?: string;
+  isDividerAbove?: boolean;
 }
 
 export interface HeaderNavItem {
@@ -12,7 +13,6 @@ export interface HeaderNavItem {
   label: string;
   path: string;
   children?: HeaderDropdownChild[];
-  anchorId?: string;
 }
 
 export const HEADER_PHONE = {
@@ -20,13 +20,24 @@ export const HEADER_PHONE = {
   display: '+7 (727) 274-93-92',
 };
 
+export const HEADER_COMPANY_INFO = {
+  company: 'ТОО «ИнтерСерт Консалтинг ЦентрАзия»',
+  address: 'г. Алматы, ул. Байзакова 299',
+  phone: '+7 (727) 274-93-92',
+  schedule: 'Пн-Пт: 09:00 - 18:00',
+};
+
 export const HEADER_LOGO = {
   title: 'Q-Manager',
-  subtitle: 'Интерсертифика Казахстан',
   icon: 'verified',
 };
 
 export const HEADER_NAV_ITEMS: HeaderNavItem[] = [
+  {
+    id: 'home',
+    label: 'Главная',
+    path: ROUTES.HOME,
+  },
   {
     id: 'education',
     label: 'Обучение',
@@ -54,44 +65,53 @@ export const HEADER_NAV_ITEMS: HeaderNavItem[] = [
         label: 'Каталог всех 34 курсов',
         path: ROUTES.COURSES,
         icon: 'arrow_forward',
+        isDividerAbove: true,
       },
     ],
   },
   {
-    id: 'consulting',
-    label: 'Консалтинг',
-    path: ROUTES.CONSULTATION_DEVELOPMENT,
-    anchorId: '#consulting',
-  },
-  {
-    id: 'documents',
-    label: 'Документы',
+    id: 'services-docs',
+    label: 'Услуги и документы',
     path: ROUTES.DOCUMENTS,
-    anchorId: '#docs-market',
+    children: [
+      {
+        label: 'Консалтинг ISO',
+        path: ROUTES.CONSULTATION_DEVELOPMENT,
+        icon: 'verified_user',
+      },
+      {
+        label: 'База регламентов СТО',
+        path: ROUTES.DOCUMENTS,
+        icon: 'description',
+      },
+      {
+        label: 'В помощь менеджеру',
+        path: ROUTES.MANAGER_HELP,
+        icon: 'checklist',
+      },
+    ],
   },
   {
-    id: 'manager-help',
-    label: 'В помощь менеджеру',
-    path: ROUTES.MANAGER_HELP,
-    anchorId: '#manager-help',
-  },
-  {
-    id: 'about',
-    label: 'О нас',
+    id: 'company',
+    label: 'О компании',
     path: ROUTES.ABOUT_US,
-    anchorId: '#about-company',
-  },
-  {
-    id: 'news',
-    label: 'Новости',
-    path: ROUTES.NEWS,
-    anchorId: '#news',
-  },
-  {
-    id: 'contacts',
-    label: 'Контакты',
-    path: ROUTES.CONTACT,
-    anchorId: '#contacts',
+    children: [
+      {
+        label: 'Об учебном центре',
+        path: ROUTES.ABOUT_US,
+        icon: 'apartment',
+      },
+      {
+        label: 'Новости и события',
+        path: ROUTES.NEWS,
+        icon: 'newspaper',
+      },
+      {
+        label: 'Контакты',
+        path: ROUTES.CONTACT,
+        icon: 'mail',
+      },
+    ],
   },
 ];
 
