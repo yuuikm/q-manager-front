@@ -24,12 +24,14 @@ function LayoutWrapper() {
   }, [location.pathname, location.search]);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {!isImmersivePage && <Header />}
-      <App />
+      <main className={!isImmersivePage ? 'pt-16 flex-grow' : 'flex-grow'}>
+        <App />
+      </main>
       {!isImmersivePage && <Footer />}
       <FaqBotWidget />
-    </>
+    </div>
   );
 }
 
